@@ -3,7 +3,7 @@
 
 package orchestra
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
 import "os"
 

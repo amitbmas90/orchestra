@@ -4,7 +4,7 @@ package orchestra
 import (
 	"os"
 	"net"
-	"syslog"
+	"log/syslog"
 	"fmt"
 	"runtime/debug"
 )

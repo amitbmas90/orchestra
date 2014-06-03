@@ -22,7 +22,7 @@ Please read the Orchestra paper (in doc/) for more information.
 License
 =======
 
-Copyright (c) 2011, Anchor Systems Pty Ltd
+Copyright (c) 2011-2014, Anchor Systems Pty Ltd
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -77,8 +77,6 @@ go-patches/ -- Patches against the Release version of Go to fix
 Patches Included
 ================
 
- * json-unmarshal-immediate.diff : Fix for Go Bug #2170 
-     (Not needed after weekly.2012-02-03 / r61 (if it ever happens))
  * syslog-auto-reconnect.diff : Fix for Go Bug #2264
 
 New In This Release

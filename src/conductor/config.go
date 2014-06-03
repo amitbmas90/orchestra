@@ -75,7 +75,7 @@ func ConfigLoad() {
 		if prefix {
 			o.Fail("ConfigLoad: Short Read (prefix only)!")
 		}
-		
+
 		line := strings.TrimSpace(string(lb))
 		if line == "" {
 			continue;

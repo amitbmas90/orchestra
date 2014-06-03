@@ -7,7 +7,7 @@ package orchestra;
 
 import (
 	"os"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 )
 
 var (

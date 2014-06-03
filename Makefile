@@ -14,17 +14,16 @@ REVISION=1
 # build/source path, and not use the system directories.
 #
 GOPATH=$(PWD)/build-tree:$(PWD)
-GOINSTALL_FLAGS=-dashboard=false -clean=true -u=false -make=false
 
 export GOPATH
 
 all: build
 
 build:	build-tree
-	goinstall $(GOINSTALL_FLAGS) conductor
-	goinstall $(GOINSTALL_FLAGS) player
-	goinstall $(GOINSTALL_FLAGS) submitjob
-	goinstall $(GOINSTALL_FLAGS) getstatus
+	go install conductor
+	go install player
+	go install submitjob
+	go install getstatus
 
 build-tree:
 	mkdir -p build-tree/src
@@ -40,8 +39,8 @@ distclean:
 
 ### NOTE:  Make sure the checkouts have the correct tags in the lines below!
 deps:	distclean build-tree
-	mkdir -p build-tree/src/github.com/kuroneko && cd build-tree/src/github.com/kuroneko && git clone http://github.com/kuroneko/configureit.git && cd configureit && git checkout v0.1
-	mkdir -p build-tree/src/goprotobuf.googlecode.com && cd build-tree/src/goprotobuf.googlecode.com && hg clone -r go.r60 http://goprotobuf.googlecode.com/hg
+	go get -u github.com/kuroneko/configureit
+	go get -u code.google.com/p/goprotobuf/{proto,protoc-gen-go}
 
 archive.deps:	deps
 	tar czf ../orchestra-deps-$(VERSION).tgz --transform 's!^!orchestra-$(VERSION)/!' --exclude .git --exclude .hg build-tree/src
