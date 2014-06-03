@@ -36,7 +36,7 @@ func NewJobRequest() (req *JobRequest) {
 	return req
 }
 
-func JobRequestFromReader(src io.Reader) (req *JobRequest, err os.Error) {
+func JobRequestFromReader(src io.Reader) (req *JobRequest, err error) {
 	req = NewJobRequest()
 	jdec := json.NewDecoder(src)
 
@@ -121,7 +121,7 @@ func (req *JobRequest) UpdateInSpool()  {
 }
 
 // deserialise the job record from the finished spool
-func LoadFromFinished(jobid uint64) (req *JobRequest, err os.Error) {
+func LoadFromFinished(jobid uint64) (req *JobRequest, err error) {
 	fpath := path.Join(GetSpoolDirectory(), "finished", FilenameForJobId(jobid))
 	fh, err := os.Open(fpath)
 	if err != nil {

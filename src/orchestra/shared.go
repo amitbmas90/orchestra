@@ -56,7 +56,7 @@ func Fail(mesg string, args ...interface {}) {
 func MightFail(err error, mesg string, args ...interface {}) {
 	if (nil != err) {
 		imesg := fmt.Sprintf(mesg, args...)
-		Fail("%s: %s", imesg, err.String())
+		Fail("%s: %s", imesg, err.Error())
 	}
 }
 

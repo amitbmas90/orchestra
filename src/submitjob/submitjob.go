@@ -7,10 +7,11 @@ package main
 import (
 	"io"
 	"net"
-	"json"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
+	"time"
 )
 
 type JobRequest struct {
@@ -100,7 +101,7 @@ func main() {
 
 	defer conn.Close()
 
-	conn.SetTimeout(0)
+	conn.SetDeadline(time.Time{})
 
 	nc := net.Conn(conn)
 

@@ -3,9 +3,11 @@
 package main
 
 import (
-	"os"
 	"bufio"
+	"io"
+	"os"
 	"strings"
+	"syscall"
 	o "orchestra"
 )
 
@@ -22,7 +24,7 @@ func batchLogger(jobid uint64, errpipe *os.File) {
 	r := bufio.NewReader(errpipe)
 	for {
 		lb, _, err := r.ReadLine()
-		if err == os.EOF {
+		if err == io.EOF {
 			return
 		}
 		if err != nil {
@@ -129,24 +131,27 @@ func doExecution(task *TaskRequest, completionChannel chan<- *TaskResponse) {
 		task.MyResponse.State = RESP_FAILED_HOST_ERROR
 		return
 	}
-	wm, err := proc.Wait(0)
+	wm, err := proc.Wait()
 	if err != nil {
 		o.Warn("job%d: Error waiting for process", task.Id)
 		task.MyResponse.State = RESP_FAILED_UNKNOWN
 		// Worse of all, we don't even know if we succeeded.
 		return
 	}
-	if !(wm.WaitStatus.Signaled() || wm.WaitStatus.Exited()) {
+	ws := wm.Sys()
+	waitStatus := ws.(syscall.WaitStatus)
+
+	if !(waitStatus.Signaled() || waitStatus.Exited()) {
 		o.Assert("Non Terminal notification received when not expected.")
 		return
 	}
-	if wm.WaitStatus.Signaled() {
+	if waitStatus.Signaled() {
 		o.Warn("job%d: Process got signalled", task.Id)
 		task.MyResponse.State = RESP_FAILED_UNKNOWN
 		return
 	}
-	if wm.WaitStatus.Exited() {
-		if 0 == wm.WaitStatus.ExitStatus() {
+	if waitStatus.Exited() {
+		if 0 == waitStatus.ExitStatus() {
 			o.Warn("job%d: Process exited OK", task.Id)
 			task.MyResponse.State = RESP_FINISHED
 		} else {

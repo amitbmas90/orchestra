@@ -5,6 +5,7 @@ package main
 
 import (
 	"os"
+	"errors"
 	"fmt"
 	"flag"
 	o	"orchestra"
@@ -42,7 +43,7 @@ var (
 	unacknowledgedQueue	= list.New()
 	newConnection		= make(chan *NewConnectionInfo)
 	pendingTaskRequest	= false
-	InvalidValueError	= os.NewError("Invalid value")
+	InvalidValueError	= errors.New("Invalid value")
 )
 
 func getNextPendingTask() (task *TaskRequest) {

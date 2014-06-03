@@ -3,7 +3,6 @@
 package main
 
 import (
-	"os"
 	"encoding/json"
 )
 
@@ -33,7 +32,7 @@ func (ts TaskState) String() (strout string) {
 	return strout
 }
 
-func (ts TaskState) MarshalJSON() (out []byte, err os.Error) {
+func (ts TaskState) MarshalJSON() (out []byte, err error) {
 	strout := ts.String()
 	if strout != "" {
 		return json.Marshal(strout)
@@ -41,7 +40,7 @@ func (ts TaskState) MarshalJSON() (out []byte, err os.Error) {
 	return nil, InvalidValueError
 }
 
-func (ts *TaskState) UnmarshalJSON(in []byte) (err os.Error) {
+func (ts *TaskState) UnmarshalJSON(in []byte) (err error) {
 	var statestr string
 	err = json.Unmarshal(in, &statestr)
 	if err != nil {

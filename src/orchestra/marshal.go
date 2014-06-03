@@ -93,7 +93,7 @@ func (p *WirePkt) Decode() (obj interface{}, err error) {
 	return nil, ErrUnknownMessage
 }
 
-func Encode(obj interface{}) (p *WirePkt, err error) {
+func Encode(obj proto.Message) (p *WirePkt, err error) {
 	p = new(WirePkt)
 	switch obj.(type) {
 	case *IdentifyClient:

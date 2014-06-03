@@ -20,7 +20,7 @@ export GOPATH
 all: build
 
 build:	build-tree
-	go install conductor
+#	go install conductor
 	go install player
 	go install submitjob
 	go install getstatus

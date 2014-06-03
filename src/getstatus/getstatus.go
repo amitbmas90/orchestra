@@ -7,11 +7,12 @@ package main
 import (
 	"io"
 	"net"
-	"json"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 type StatusRequest struct {
@@ -55,8 +56,8 @@ func main() {
 	}
 
 	sr := NewStatusRequest()
-	var err os.Error
-	sr.Id, err = strconv.Atoui64(flag.Arg(0))
+	var err error
+	sr.Id, err = strconv.ParseUint(flag.Arg(0), 0, 64)
 	if nil != err {
 		fmt.Fprintf(os.Stderr, "Failed to parse JobID: %s\n", err)
 		os.Exit(1)
@@ -75,7 +76,7 @@ func main() {
 
 	defer conn.Close()
 
-	conn.SetTimeout(0)
+	conn.SetDeadline(time.Time{})
 
 	nc := net.Conn(conn)
 
