@@ -7,9 +7,9 @@ import (
 )
 
 type TaskResponse struct {
-	id		uint64				
+	id		uint64
 	State		ResponseState			`json:"state"`
-	Response	map[string]string		`json:"response"`	
+	Response	map[string]string		`json:"response"`
 }
 
 // Response related magic

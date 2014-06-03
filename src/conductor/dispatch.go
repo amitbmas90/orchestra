@@ -35,7 +35,7 @@ func DispatchTask(task *TaskRequest) {
 }
 
 type QueueInformation struct {
-	idlePlayers 	[]string
+	idlePlayers	[]string
 	waitingTasks	int
 }
 
@@ -43,7 +43,7 @@ func DispatchStatus() (waitingTasks int, waitingPlayers []string) {
 	r := make(chan *QueueInformation)
 
 	statusRequest <- r
-	s := <- r
+	s := <-r
 
 	return s.waitingTasks, s.idlePlayers
 }
@@ -127,7 +127,7 @@ func masterDispatch() {
 			response.waitingTasks = tq.Len()
 			pqLen := pq.Len()
 			response.idlePlayers = make([]string, pqLen)
-			
+
 			idx := 0
 			for i := pq.Front(); i != nil; i = i.Next() {
 				player,_ := i.Value.(*ClientInfo)

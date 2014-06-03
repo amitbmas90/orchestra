@@ -29,7 +29,7 @@ type registryResponse struct {
 	success			bool
 	task			*TaskRequest
 }
-	
+
 var chanRequest = make(chan *registryRequest, requestQueueSize)
 
 // bake a minimal request structure together.
@@ -51,7 +51,7 @@ func TaskAdd(task *TaskRequest) bool {
 	rr.task = task
 
 	chanRequest <- rr
-	resp := <- rr.responseChannel 
+	resp := <-rr.responseChannel
 	return resp.success
 }
 
@@ -63,7 +63,7 @@ func TaskGet(id uint64) *TaskRequest {
 	rr.id = id
 
 	chanRequest <- rr
-	resp := <- rr.responseChannel
+	resp := <-rr.responseChannel
 	return resp.task
 }
 
@@ -71,7 +71,7 @@ func manageRegistry() {
 	taskRegister := make(map[uint64]*TaskRequest)
 
 	for {
-		req := <- chanRequest
+		req := <-chanRequest
 		resp := new (registryResponse)
 		switch (req.operation) {
 		case requestAddTask:

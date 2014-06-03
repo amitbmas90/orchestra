@@ -34,7 +34,7 @@ type JsonStatusResponse struct {
 func NewJsonStatusResponse() (jsr *JsonStatusResponse) {
 	jsr = new(JsonStatusResponse)
 	jsr.Players = make(map[string]*JsonPlayerStatus)
-	
+
 	return jsr
 }
 
@@ -42,7 +42,7 @@ func NewJsonPlayerStatus() (jps *JsonPlayerStatus) {
 	jps = new(JsonPlayerStatus)
 	jps.Response = make(map[string]string)
 
-	return jps	
+	return jps
 }
 
 func handleAudienceRequest(c net.Conn) {
@@ -88,7 +88,6 @@ func handleAudienceRequest(c net.Conn) {
 					}
 					iresp.Players[resnames[i]] = presp
 				}
-		
 			}
 			jresp[1] = iresp
 		} else {
@@ -199,11 +198,11 @@ func UnixAudienceListener(sockaddr string) {
 	} else {
 		o.Warn("Couldn't fudge permission on audience socket: %s", err)
 	}
-	
+
 	// make sure we clean up the unix socket when we die.
 	defer l.Close()
 	defer os.Remove(sockaddr)
-	AudienceListener(l)	
+	AudienceListener(l)
 }
 
 func StartAudienceSock() {

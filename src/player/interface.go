@@ -70,7 +70,7 @@ func NewScoreInterface(task *TaskRequest) (iface ScoreInterface) {
 		return nil
 	}
 	ifinit, _ := interfaces[score.Interface]
-	
+
 	iface = ifinit(task)
 
 	return iface

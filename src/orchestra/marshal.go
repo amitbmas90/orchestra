@@ -135,7 +135,7 @@ func MakeIdentifyClient(hostname string) (p *WirePkt) {
 	s.Hostname = proto.String(hostname)
 
 	p, _ = Encode(s)
-	
+
 	return p
 }
 

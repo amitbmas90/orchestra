@@ -19,7 +19,7 @@ const (
 	InitialReconnectDelay		= 5e9
 	MaximumReconnectDelay		= 300e9
 	ReconnectDelayScale		= 2
-	KeepaliveDelay 			= 200e9
+	KeepaliveDelay			= 200e9
 	RetryDelay			= 5e9
 )
 
@@ -29,14 +29,14 @@ type NewConnectionInfo struct {
 }
 
 var (
-	ConfigFile		= flag.String("config-file", "/etc/orchestra/player.conf", "Path to the configuration file")	
+	ConfigFile		= flag.String("config-file", "/etc/orchestra/player.conf", "Path to the configuration file")
 	DontVerifyPeer		= flag.Bool("dont-verify-peer", false, "Ignore TLS verification for the peer")
 	CertPair tls.Certificate
 	CACertPool *x509.CertPool
 	LocalHostname string	= ""
-	
- 	receivedMessage 	= make(chan *o.WirePkt)
-	lostConnection 		= make(chan int)
+
+	receivedMessage		= make(chan *o.WirePkt)
+	lostConnection		= make(chan int)
 	reloadScores		= make(chan int, 2)
 	pendingQueue		= list.New()
 	unacknowledgedQueue	= list.New()
@@ -115,7 +115,7 @@ func Reader(conn net.Conn) {
 			break;
 		}
 		receivedMessage <- pkt
-	}	
+	}
 }
 
 func handleNop(c net.Conn, message interface{}) {
@@ -146,7 +146,7 @@ func handleRequest(c net.Conn, message interface{}) {
 		// add the Job to our Registry
 		task.MyResponse = NewTaskResponse()
 		task.MyResponse.id = task.Id
-		task.MyResponse.State = RESP_PENDING		
+		task.MyResponse.State = RESP_PENDING
 		TaskAdd(task)
 		o.Info("Added New Task (Job ID %d) to our local registry", task.Id)
 		// and then push it onto the pending job list so we know it needs actioning.
@@ -209,7 +209,7 @@ func connectMe(initialDelay int64) {
 
 		raddr := fmt.Sprintf("%s:%d", masterHostname, 2258)
 		o.Info("Connecting to %s", raddr)
-		conn, err := tls.Dial("tcp", raddr, tconf)		
+		conn, err := tls.Dial("tcp", raddr, tconf)
 		if err == nil && !*DontVerifyPeer {
 			conn.Handshake()
 			err = conn.VerifyHostname(masterHostname)
@@ -227,7 +227,7 @@ func connectMe(initialDelay int64) {
 
 func ProcessingLoop() {
 	var	conn			net.Conn		= nil
-	var     nextRetryResp		*TaskResponse 		= nil
+	var     nextRetryResp		*TaskResponse		= nil
 	var	taskCompletionChan	<-chan *TaskResponse	= nil
 	var	connectDelay		int64			= 0
 	var	doScoreReload		bool			= false
@@ -235,7 +235,7 @@ func ProcessingLoop() {
 	go connectMe(connectDelay)
 
 	// and this is where we spin!
-	for {	
+	for {
 		var retryDelay int64 = 0
 		var retryChan  <-chan int64 = nil
 
@@ -271,7 +271,7 @@ func ProcessingLoop() {
 		}
 		select {
 		// Currently executing job finishes.
-		case newresp := <- taskCompletionChan:
+		case newresp := <-taskCompletionChan:
 			o.Debug("job%d: Completed with State %s\n", newresp.id, newresp.State)
 			// preemptively set a retrytime.
 			newresp.RetryTime = time.Nanoseconds()
@@ -307,7 +307,7 @@ func ProcessingLoop() {
 
 			// start the reader
 			go Reader(conn)
-		
+
 			/* Introduce ourself */
 			p := o.MakeIdentifyClient(LocalHostname)
 			p.Send(conn)

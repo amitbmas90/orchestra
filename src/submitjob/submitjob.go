@@ -86,7 +86,7 @@ func main() {
 			jr.Params[args[k]] = args[k+1]
 		}
 	}
-	
+
 	raddr, err := net.ResolveUnixAddr("unix", *AudienceSock)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to resolve sockaddr: %s\n", err)

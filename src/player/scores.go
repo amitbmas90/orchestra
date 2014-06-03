@@ -32,7 +32,6 @@ type ScoreExecution struct {
 	Score	*ScoreInfo
 	Task	*TaskRequest
 }
-	
 
 func NewScoreInfo() (si *ScoreInfo) {
 	si = new (ScoreInfo)
@@ -69,7 +68,7 @@ func (si *ScoreInfo) updateFromConfig(config *configureit.Config) {
 	// propogate initial Pwd
 	opt = config.Get("dir")
 	sopt, _ = opt.(*configureit.StringOption)
-	si.InitialPwd = sopt.Value	
+	si.InitialPwd = sopt.Value
 }
 
 var (
@@ -91,7 +90,7 @@ func LoadScores() {
 	defer dir.Close()
 
 	Scores = make(map[string]*ScoreInfo)
-	
+
 	files, err := dir.Readdir(-1)
 	for i := range files {
 		// skip ., .. and other dotfiles.
@@ -119,7 +118,7 @@ func LoadScores() {
 			si := NewScoreInfo()
 			si.Name = files[i].Name
 			si.Executable = fullpath
-		
+
 			conf, err := os.Open(conffile)
 			if err == nil {
 				o.Warn("Parsing configuration for %s", fullpath)

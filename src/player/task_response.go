@@ -7,7 +7,7 @@ import (
 )
 
 type TaskResponse struct {
-	id		uint64				
+	id		uint64
 	State		ResponseState			`json:"state"`
 	Response	map[string]string		`json:"response"`
 	// player only fields
@@ -64,7 +64,7 @@ func ResponseFromProto(ptr *o.ProtoTaskResponse) (r *TaskResponse) {
 
 func (resp *TaskResponse) Encode() (ptr *o.ProtoTaskResponse) {
 	ptr = new(o.ProtoTaskResponse)
-	
+
 	switch resp.State {
 	case RESP_RUNNING:
 		ptr.Status = o.NewProtoTaskResponse_TaskStatus(o.ProtoTaskResponse_JOB_INPROGRESS)

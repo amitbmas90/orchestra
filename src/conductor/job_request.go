@@ -17,7 +17,7 @@ type JobRequest struct {
 	Scope		JobScope			`json:"scope"`
 	Players		[]string			`json:"players"`
 	Id		uint64				`json:"id"`
-	State		JobState			`json:"state"`		
+	State		JobState			`json:"state"`
 	Params		map[string]string		`json:"params"`
 	Tasks		[]*TaskRequest			`json:"tasks"`
 	// you need to use the registry to access these - only public for
@@ -65,7 +65,7 @@ func (req *JobRequest) MakeTasks() (tasks []*TaskRequest) {
 	req.normalise()
 
 	var numtasks int
-	
+
 	switch (req.Scope) {
 	case SCOPE_ONEOF:
 		numtasks = 1
@@ -73,7 +73,7 @@ func (req *JobRequest) MakeTasks() (tasks []*TaskRequest) {
 		numtasks = len(req.Players)
 	}
 	tasks = make([]*TaskRequest, numtasks)
-	
+
 	for c := 0; c < numtasks; c++ {
 		t := NewTaskRequest()
 		t.job = req
@@ -128,7 +128,7 @@ func LoadFromFinished(jobid uint64) (req *JobRequest, err os.Error) {
 		return nil, err
 	}
 	defer fh.Close()
-	
+
 	req, err = JobRequestFromReader(fh)
 	return req, err
 }

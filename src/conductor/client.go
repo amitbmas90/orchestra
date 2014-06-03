@@ -15,7 +15,7 @@ import (
 
 const (
 	KeepaliveDelay =	200e9 // once every 200 seconds.
-	RetryDelay     =  	10e9 // retry every 10 seconds.  Must be smaller than the keepalive to avoid channel race.
+	RetryDelay     =	10e9 // retry every 10 seconds.  Must be smaller than the keepalive to avoid channel race.
 	OutputQueueDepth =	10 // This needs to be large enough that we don't deadlock on ourself.
 )
 
@@ -92,7 +92,7 @@ func (client *ClientInfo) GotTask(task *TaskRequest) {
 		// request a update to the spool so the PENDING flag is stored.
 		JobWriteUpdate(task.job.Id)
 	case TASK_FINISHED:
-		/* discard.  We don't care about tasks that are done. */		
+		/* discard.  We don't care about tasks that are done. */
 	}
 }
 
@@ -355,7 +355,7 @@ func clientLogic(client *ClientInfo) {
 			o.Debug("Sending Keepalive to %s", client.Name())
 			_, err := p.Send(client.connection)
 			if err != nil {
-				o.Warn("Error sending pkt to %s: %s.  Terminating Connection.", client.Name(), err)	
+				o.Warn("Error sending pkt to %s: %s.  Terminating Connection.", client.Name(), err)
 				client.Abort()
 			}
 		}

@@ -52,7 +52,7 @@ func (p *WirePkt) Send(c net.Conn) (n int, err os.Error) {
 	n += ninc
 	if (err != nil) {
 		return n, err
-	}	
+	}
 	ninc, err = c.Write(p.Payload[0:p.Length])
 	n += ninc
 	if (err != nil) {

@@ -23,7 +23,7 @@ func NewTaskRequest() (req *TaskRequest) {
 */
 func TaskFromProto(ptr *o.ProtoTaskRequest) (t *TaskRequest) {
 	t = NewTaskRequest()
-	
+
 	t.Score = *(ptr.Jobname)
 	t.Id = *(ptr.Id)
 	t.Params = o.MapFromProtoJobParameters(ptr.Parameters)

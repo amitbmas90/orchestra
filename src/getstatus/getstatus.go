@@ -61,7 +61,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Failed to parse JobID: %s\n", err)
 		os.Exit(1)
 	}
-	
+
 	raddr, err := net.ResolveUnixAddr("unix", *AudienceSock)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to resolve sockaddr: %s\n", err)

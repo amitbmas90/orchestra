@@ -51,7 +51,7 @@ func Fail(mesg string, args ...interface {}) {
 	}
 	fmt.Fprintf(os.Stderr, "ERR: "+mesg+"\n", args...);
 	os.Exit(1)
-}	
+}
 
 func MightFail(err os.Error, mesg string, args ...interface {}) {
 	if (nil != err) {
