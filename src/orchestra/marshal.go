@@ -6,13 +6,13 @@
 package orchestra;
 
 import (
-	"os"
+	"errors"
 	"code.google.com/p/goprotobuf/proto"
 )
 
 var (
-	ErrUnknownType = os.NewError("Unknown Type in Encode request")
-	ErrObjectTooLarge = os.NewError("Encoded Object exceeds maximum encoding size")
+	ErrUnknownType = errors.New("Unknown Type in Encode request")
+	ErrObjectTooLarge = errors.New("Encoded Object exceeds maximum encoding size")
 )
 
 /* ugh ugh ugh.  As much as I love protocol buffers, not having maps
@@ -47,7 +47,7 @@ func ProtoJobParametersFromMap(mapparam map[string]string) (parray []*ProtoJobPa
 
 
 
-func (p *WirePkt) Decode() (obj interface{}, err os.Error) {
+func (p *WirePkt) Decode() (obj interface{}, err error) {
 	switch (p.Type) {
 	case TypeNop:
 		if (p.Length != 0) {
@@ -93,7 +93,7 @@ func (p *WirePkt) Decode() (obj interface{}, err os.Error) {
 	return nil, ErrUnknownMessage
 }
 
-func Encode(obj interface{}) (p *WirePkt, err os.Error) {
+func Encode(obj interface{}) (p *WirePkt, err error) {
 	p = new(WirePkt)
 	switch obj.(type) {
 	case *IdentifyClient:
@@ -117,7 +117,7 @@ func Encode(obj interface{}) (p *WirePkt, err os.Error) {
 	}
 	p.Length = uint16(len(p.Payload))
 
-	return p, nil	
+	return p, nil
 }
 
 

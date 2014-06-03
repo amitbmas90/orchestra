@@ -6,6 +6,7 @@
 package orchestra;
 
 import (
+	"errors"
 	"os"
 	"net"
 	"fmt"
@@ -27,8 +28,8 @@ const (
 )
 
 var (
-	ErrMalformedMessage = os.NewError("Malformed Message")
-	ErrUnknownMessage   = os.NewError("Unknown Message")
+	ErrMalformedMessage = errors.New("Malformed Message")
+	ErrUnknownMessage   = errors.New("Unknown Message")
 )
 
 func (p *WirePkt) ValidUnidentified() bool {
