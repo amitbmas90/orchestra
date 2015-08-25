@@ -16,16 +16,16 @@ import (
 )
 
 const (
-	InitialReconnectDelay		= 5e9
-	MaximumReconnectDelay		= 300e9
+	InitialReconnectDelay		= 5 * time.Second
+	MaximumReconnectDelay		= 300 * time.Second
 	ReconnectDelayScale		= 2
-	KeepaliveDelay			= 200e9
-	RetryDelay			= 5e9
+	KeepaliveDelay			= 200 * time.Second
+	RetryDelay			= 5 * time.Second
 )
 
 type NewConnectionInfo struct {
 	conn net.Conn
-	timeout int64
+	timeout time.Duration
 }
 
 var (
@@ -69,7 +69,7 @@ func getNextUnacknowledgedResponse() (resp *TaskResponse) {
 }
 
 func appendUnacknowledgedResponse(resp *TaskResponse) {
-	resp.RetryTime = time.Nanoseconds() + RetryDelay
+	resp.RetryTime = time.Now().Add(RetryDelay)
 	unacknowledgedQueue.PushBack(resp)
 }
 
@@ -177,14 +177,13 @@ var dispatcher	= map[uint8] func(net.Conn, interface{}) {
 	o.TypeTaskResponse:	handleIllegal,
 }
 
-func connectMe(initialDelay int64) {
-	var backOff int64 = initialDelay
+func connectMe(initialDelay time.Duration) {
+	var backOff time.Duration = initialDelay
 	for {
 		// Sleep first.
 		if backOff > 0 {
-			o.Info("Sleeping for %d seconds", backOff/1e9)
-			err := time.Sleep(backOff)
-			o.MightFail(err, "Couldn't Sleep")
+			o.Info("Sleeping for %d seconds", int(backOff.Seconds()))
+			time.Sleep(backOff)
 			backOff *= ReconnectDelayScale
 			if backOff > MaximumReconnectDelay {
 				backOff = MaximumReconnectDelay
@@ -229,15 +228,16 @@ func ProcessingLoop() {
 	var	conn			net.Conn		= nil
 	var     nextRetryResp		*TaskResponse		= nil
 	var	taskCompletionChan	<-chan *TaskResponse	= nil
-	var	connectDelay		int64			= 0
+	var	connectDelay		time.Duration		= 0
 	var	doScoreReload		bool			= false
+
 	// kick off a new connection attempt.
 	go connectMe(connectDelay)
 
 	// and this is where we spin!
 	for {
-		var retryDelay int64 = 0
-		var retryChan  <-chan int64 = nil
+		var retryDelay time.Duration
+		var retryChan <-chan time.Time
 
 		if conn != nil {
 			for nextRetryResp == nil {
@@ -245,7 +245,7 @@ func ProcessingLoop() {
 				if nil == nextRetryResp {
 					break
 				}
-				retryDelay = nextRetryResp.RetryTime - time.Nanoseconds()
+				retryDelay = nextRetryResp.RetryTime.Sub(time.Now())
 				if retryDelay < 0 {
 					sendResponse(conn, nextRetryResp)
 					nextRetryResp = nil
@@ -274,7 +274,7 @@ func ProcessingLoop() {
 		case newresp := <-taskCompletionChan:
 			o.Debug("job%d: Completed with State %s\n", newresp.id, newresp.State)
 			// preemptively set a retrytime.
-			newresp.RetryTime = time.Nanoseconds()
+			newresp.RetryTime = time.Now()
 			// ENOCONN - sub it in as our next retryresponse, and prepend the old one onto the queue.
 			if nil == conn {
 				if nil != nextRetryResp {

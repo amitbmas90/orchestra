@@ -10,6 +10,7 @@ import (
 	"os"
 	"io"
 	o "orchestra"
+	"time"
 )
 
 type JobRequest struct {
@@ -27,7 +28,7 @@ type JobRequest struct {
 
 	// Timeout for autoexpiry.  Only valid if State if
 	// job.State.Finished() is true.
-	expirytime	int64
+	expirytime	time.Time
 }
 
 func NewJobRequest() (req *JobRequest) {

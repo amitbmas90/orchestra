@@ -34,7 +34,7 @@ const (
 
 	requestQueueSize		= 10
 
-	jobLingerTime			= int64(30e9)
+	jobLingerTime			= 30 * time.Second
 )
 
 type registryRequest struct {
@@ -59,11 +59,11 @@ var (
 	chanRegistryRequest	= make(chan *registryRequest, requestQueueSize)
 	clientList		= make(map[string]*ClientInfo)
 	jobRegister		= make(map[uint64]*JobRequest)
-	expiryChan		<-chan int64
+	expiryChan		<-chan time.Time
 	expiryJobid		uint64
 	expiryList		*list.List
 
-	expiryLoopFudge		int64 = 10e6; /* 10 ms should be enough fudgefactor */
+	expiryLoopFudge		time.Duration = 10 * time.Millisecond; /* 10 ms should be enough fudgefactor */
 )
 
 func init() {
@@ -110,17 +110,17 @@ func regInternalFindNextExpiry() {
 		if !ok {
 			o.Assert("item in expiryList not a *JobRequest")
 		}
-		if (time.Nanoseconds() + expiryLoopFudge) > req.expirytime {
+		if time.Now().Add(expiryLoopFudge).After(req.expirytime) {
 			regInternalExpireJob(req.Id)
 		} else {
-			expiryChan = time.After(req.expirytime - time.Nanoseconds())
+			expiryChan = time.After(req.expirytime.Sub(time.Now()))
 			expiryJobid = req.Id
 		}
 	}
 }
 
 func regInternalMarkJobForExpiry(job *JobRequest) {
-	job.expirytime = time.Nanoseconds() + jobLingerTime
+	job.expirytime = time.Now().Add(jobLingerTime)
 	expiryList.PushBack(job)
 	// if there is no job pending expiry, feed it into the delay loop
 	if expiryChan == nil {

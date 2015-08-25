@@ -4,6 +4,7 @@ package main
 
 import (
 	o "orchestra"
+	"time"
 )
 
 type TaskResponse struct {
@@ -11,7 +12,7 @@ type TaskResponse struct {
 	State		ResponseState			`json:"state"`
 	Response	map[string]string		`json:"response"`
 	// player only fields
-	RetryTime	int64				`json:"retrytime"`
+	RetryTime	time.Time			`json:"retrytime"`
 }
 
 // Response related magic

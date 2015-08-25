@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	KeepaliveDelay =	200e9 // once every 200 seconds.
-	RetryDelay     =	10e9 // retry every 10 seconds.  Must be smaller than the keepalive to avoid channel race.
-	OutputQueueDepth =	10 // This needs to be large enough that we don't deadlock on ourself.
+	KeepaliveDelay   = 200 * time.Second
+	RetryDelay       = 10 * time.Second // Must be smaller than the keepalive to avoid channel race.
+	OutputQueueDepth = 10               // This needs to be large enough that we don't deadlock on ourself.
 )
 
 
@@ -74,7 +74,7 @@ func (client *ClientInfo) SendTask(task *TaskRequest) {
 	p, err := o.Encode(tr)
 	o.MightFail(err, "Couldn't encode task for client.")
 	client.Send(p)
-	task.RetryTime = time.Nanoseconds() + RetryDelay
+	task.RetryTime = time.Now().Add(RetryDelay)
 }
 
 func (client *ClientInfo) GotTask(task *TaskRequest) {
@@ -273,33 +273,32 @@ var dispatcher	= map[uint8] func(*ClientInfo,interface{}) {
 
 }
 
-var loopFudge int64 = 10e6; /* 10 ms should be enough fudgefactor */
+var loopFudge time.Duration = 10 * time.Millisecond /* 10 ms should be enough fudgefactor */
 func clientLogic(client *ClientInfo) {
 	loop := true
 	for loop {
-		var	retryWait <-chan int64 = nil
+		var	retryWait <-chan time.Time
 		var	retryTask *TaskRequest = nil
 		if (client.Player != "") {
-			var waitTime int64 = 0
-			var now int64 = 0
+			var waitTime, now time.Time
 			cleanPass := false
 			attempts := 0
 			for !cleanPass && attempts < 10 {
 				/* reset our state for the pass */
-				waitTime = 0
+				waitTime = time.Time{}
 				retryTask = nil
 				attempts++
 				cleanPass = true
-				now = time.Nanoseconds() + loopFudge
+				now = time.Now().Add(loopFudge)
 				// if the client is correctly associated,
 				// evaluate all jobs for outstanding retries,
 				// and work out when our next retry is due.
 				for _,v := range client.pendingTasks {
-					if v.RetryTime < now {
+					if v.RetryTime.Before(now) {
 						client.SendTask(v)
 						cleanPass = false
 					} else {
-						if waitTime == 0 || v.RetryTime < waitTime {
+						if waitTime == (time.Time{}) || v.RetryTime.Before(waitTime) {
 							retryTask = v
 							waitTime = v.RetryTime
 						}
@@ -310,7 +309,7 @@ func clientLogic(client *ClientInfo) {
 				o.Fail("Couldn't find next timeout without restarting excessively.")
 			}
 			if (retryTask != nil) {
-				retryWait = time.After(waitTime-time.Nanoseconds())
+				retryWait = time.After(waitTime.Sub(time.Now()))
 			}
 		}
 		select {
