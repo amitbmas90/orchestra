@@ -179,7 +179,7 @@ func AudienceListener(l net.Listener) {
 func UnixAudienceListener(sockaddr string) {
 	fi, err := os.Stat(sockaddr)
 	if err == nil {
-		if fi.IsSocket() {
+		if (fi.Mode() & os.ModeSocket) != 0 {
 			o.Warn("Removing stale socket at %s", sockaddr)
 			os.Remove(sockaddr)
 		} else {
@@ -193,7 +193,7 @@ func UnixAudienceListener(sockaddr string) {
 	// Fudge the permissions on the unixsock!
 	fi, err = os.Stat(sockaddr)
 	if err == nil {
-		os.Chmod(sockaddr, fi.Mode | 0777)
+		os.Chmod(sockaddr, fi.Mode()|0777)
 	} else {
 		o.Warn("Couldn't fudge permission on audience socket: %s", err)
 	}

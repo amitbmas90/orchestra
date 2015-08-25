@@ -94,29 +94,30 @@ func LoadScores() {
 	files, err := dir.Readdir(-1)
 	for i := range files {
 		// skip ., .. and other dotfiles.
-		if strings.HasPrefix(files[i].Name, ".") {
+		if strings.HasPrefix(files[i].Name(), ".") {
 			continue
 		}
 		// emacs backup files.  ignore these.
-		if strings.HasSuffix(files[i].Name, "~") || strings.HasPrefix(files[i].Name, "#") {
+		if strings.HasSuffix(files[i].Name(), "~") || strings.HasPrefix(files[i].Name(), "#") {
 			continue
 		}
 		// .conf is reserved for score configurations.
-		if strings.HasSuffix(files[i].Name, ".conf") {
+		if strings.HasSuffix(files[i].Name(), ".conf") {
 			continue
 		}
-		if !files[i].IsRegular() && !files[i].IsSymlink() {
+		modetype := files[i].Mode() & os.ModeType
+		if modetype != 0 && modetype != os.ModeSymlink {
 			continue
 		}
 
 		// check for the executionable bit
-		if (files[i].Permission() & 0111) != 0 {
-			fullpath := path.Join(scoreDirectory, files[i].Name)
+		if (files[i].Mode().Perm() & 0111) != 0 {
+			fullpath := path.Join(scoreDirectory, files[i].Name())
 			conffile := fullpath+".conf"
-			o.Warn("Considering %s as score", files[i].Name)
+			o.Warn("Considering %s as score", files[i].Name())
 
 			si := NewScoreInfo()
-			si.Name = files[i].Name
+			si.Name = files[i].Name()
 			si.Executable = fullpath
 
 			conf, err := os.Open(conffile)
@@ -127,7 +128,7 @@ func LoadScores() {
 			} else {
 				o.Warn("Couldn't open config file for %s, assuming defaults: %s", files[i].Name, err)
 			}
-			Scores[files[i].Name] = si
+			Scores[files[i].Name()] = si
 		}
 	}
 }

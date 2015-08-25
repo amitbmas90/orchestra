@@ -54,7 +54,7 @@ func ServiceRequests() {
 			defer fh.Close()
 			fi, err := fh.Stat()
 			o.MightFail(err, "Couldn't stat CA certificate file: %s", filename)
-			data := make([]byte, fi.Size)
+			data := make([]byte, fi.Size())
 			fh.Read(data)
 			CACertPool.AppendCertsFromPEM(data)
 		}
