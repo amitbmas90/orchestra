@@ -1,5 +1,0 @@
-bin/conductor	/usr/sbin
-bin/getstatus	/usr/bin
-bin/submitjob	/usr/bin
-samples/players	/etc/conductor
-samples/conductor.conf	/etc/conductor

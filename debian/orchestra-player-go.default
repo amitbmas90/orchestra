@@ -1,8 +1,0 @@
-#
-# Defaults for orchestra-player-go
-#
-
-#
-# set ENABLED=yes to enable the player.
-#
-ENABLED=no

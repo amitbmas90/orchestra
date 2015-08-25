@@ -1,10 +1,4 @@
-.\#*
-*~
-\#*
-*.6
-*.8
-
-**/build.out
-**/_obj
-bin/**
-pkg/**
+/bin/
+/pkg/
+*.pb.go
+*.tar.gz

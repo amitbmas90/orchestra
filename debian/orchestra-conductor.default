@@ -1,8 +1,0 @@
-#
-# Defaults for orchestra-conductor
-#
-
-#
-# set ENABLED=yes to enable the conductor.
-#
-ENABLED=no
