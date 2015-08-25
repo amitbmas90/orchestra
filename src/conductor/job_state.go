@@ -4,7 +4,7 @@ package main
 
 import (
 	"os"
-	"json"
+	"encoding/json"
 )
 
 type JobState int

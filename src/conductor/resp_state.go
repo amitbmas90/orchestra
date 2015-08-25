@@ -3,7 +3,7 @@
 package main
 
 import (
-	"json"
+	"encoding/json"
 )
 
 type ResponseState int

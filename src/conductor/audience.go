@@ -5,7 +5,7 @@ package main
 
 import (
 	"io"
-	"json"
+	"encoding/json"
 	"net"
 	"os"
 	o "orchestra"

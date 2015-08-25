@@ -7,7 +7,7 @@ package main
 import (
 	"io"
 	"net"
-	"json"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"

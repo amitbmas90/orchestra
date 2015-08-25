@@ -5,7 +5,7 @@ package main
 
 import (
 	"sort"
-	"json"
+	"encoding/json"
 	"path"
 	"os"
 	"io"
