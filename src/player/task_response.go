@@ -67,17 +67,17 @@ func (resp *TaskResponse) Encode() (ptr *o.ProtoTaskResponse) {
 
 	switch resp.State {
 	case RESP_RUNNING:
-		ptr.Status = o.NewProtoTaskResponse_TaskStatus(o.ProtoTaskResponse_JOB_INPROGRESS)
+		ptr.Status = o.ProtoTaskResponse_JOB_INPROGRESS.Enum()
 	case RESP_FINISHED:
-		ptr.Status = o.NewProtoTaskResponse_TaskStatus(o.ProtoTaskResponse_JOB_SUCCESS)
+		ptr.Status = o.ProtoTaskResponse_JOB_SUCCESS.Enum()
 	case RESP_FAILED:
-		ptr.Status = o.NewProtoTaskResponse_TaskStatus(o.ProtoTaskResponse_JOB_FAILED)
+		ptr.Status = o.ProtoTaskResponse_JOB_FAILED.Enum()
 	case RESP_FAILED_UNKNOWN_SCORE:
-		ptr.Status = o.NewProtoTaskResponse_TaskStatus(o.ProtoTaskResponse_JOB_UNKNOWN)
+		ptr.Status = o.ProtoTaskResponse_JOB_UNKNOWN.Enum()
 	case RESP_FAILED_HOST_ERROR:
-		ptr.Status = o.NewProtoTaskResponse_TaskStatus(o.ProtoTaskResponse_JOB_HOST_FAILURE)
+		ptr.Status = o.ProtoTaskResponse_JOB_HOST_FAILURE.Enum()
 	case RESP_FAILED_UNKNOWN:
-		ptr.Status = o.NewProtoTaskResponse_TaskStatus(o.ProtoTaskResponse_JOB_UNKNOWN_FAILURE)
+		ptr.Status = o.ProtoTaskResponse_JOB_UNKNOWN_FAILURE.Enum()
 	}
 	ptr.Id = new(uint64)
 	*ptr.Id = resp.id
