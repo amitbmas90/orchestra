@@ -100,8 +100,6 @@ func main() {
 
 	defer conn.Close()
 
-	conn.SetTimeout(0)
-
 	nc := net.Conn(conn)
 
 	r, _ := nc.(io.Reader)

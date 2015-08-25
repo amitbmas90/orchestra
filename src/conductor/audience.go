@@ -48,7 +48,6 @@ func NewJsonPlayerStatus() (jps *JsonPlayerStatus) {
 func handleAudienceRequest(c net.Conn) {
 	defer c.Close()
 
-	c.SetTimeout(0)
 	r, _ := c.(io.Reader)
 	w, _ := c.(io.Writer)
 	dec := json.NewDecoder(r)
