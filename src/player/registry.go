@@ -12,22 +12,22 @@
 package main
 
 const (
-	requestAddTask			= iota
+	requestAddTask = iota
 	requestGetTask
 
-	requestQueueSize		= 10
+	requestQueueSize = 10
 )
 
 type registryRequest struct {
-	operation		int
-	id			uint64
-	task			*TaskRequest
-	responseChannel		chan *registryResponse
+	operation       int
+	id              uint64
+	task            *TaskRequest
+	responseChannel chan *registryResponse
 }
 
 type registryResponse struct {
-	success			bool
-	task			*TaskRequest
+	success bool
+	task    *TaskRequest
 }
 
 var chanRequest = make(chan *registryRequest, requestQueueSize)
@@ -72,8 +72,8 @@ func manageRegistry() {
 
 	for {
 		req := <-chanRequest
-		resp := new (registryResponse)
-		switch (req.operation) {
+		resp := new(registryResponse)
+		switch req.operation {
 		case requestAddTask:
 			if nil != req.task {
 				// and register the job

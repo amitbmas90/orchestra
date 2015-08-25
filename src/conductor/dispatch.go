@@ -1,5 +1,5 @@
 /* dispatch.go
-*/
+ */
 
 package main
 
@@ -16,11 +16,11 @@ func NewRequest() (req *JobRequest) {
 
 const messageBuffer = 10
 
-var newJob		= make(chan *JobRequest, messageBuffer)
-var rqTask		= make(chan *TaskRequest, messageBuffer)
-var playerIdle		= make(chan *ClientInfo, messageBuffer)
-var playerDead		= make(chan *ClientInfo, messageBuffer)
-var statusRequest	= make(chan(chan *QueueInformation))
+var newJob = make(chan *JobRequest, messageBuffer)
+var rqTask = make(chan *TaskRequest, messageBuffer)
+var playerIdle = make(chan *ClientInfo, messageBuffer)
+var playerDead = make(chan *ClientInfo, messageBuffer)
+var statusRequest = make(chan (chan *QueueInformation))
 
 func PlayerWaitingForJob(player *ClientInfo) {
 	playerIdle <- player
@@ -35,8 +35,8 @@ func DispatchTask(task *TaskRequest) {
 }
 
 type QueueInformation struct {
-	idlePlayers	[]string
-	waitingTasks	int
+	idlePlayers  []string
+	waitingTasks int
 }
 
 func DispatchStatus() (waitingTasks int, waitingPlayers []string) {
@@ -49,7 +49,7 @@ func DispatchStatus() (waitingTasks int, waitingPlayers []string) {
 }
 
 func InitDispatch() {
-	go masterDispatch(); // go!
+	go masterDispatch() // go!
 }
 
 func QueueJob(job *JobRequest) {
@@ -76,19 +76,19 @@ func masterDispatch() {
 			/* first, scan to see if we have anything for this player */
 			i := tq.Front()
 			for {
-				if (nil == i) {
+				if nil == i {
 					/* Out of items! */
 					/* Append this player to the waiting players queue */
 					pq.PushBack(player)
-					break;
+					break
 				}
-				t,_ := i.Value.(*TaskRequest)
+				t, _ := i.Value.(*TaskRequest)
 				if t.IsTarget(player.Player) {
-					/* Found a valid job. Send it to the player, and remove it from our pending 
+					/* Found a valid job. Send it to the player, and remove it from our pending
 					 * list */
 					tq.Remove(i)
 					player.TaskQ <- t
-					break;
+					break
 				}
 				i = i.Next()
 			}
@@ -98,7 +98,7 @@ func masterDispatch() {
 				p, _ := i.Value.(*ClientInfo)
 				if player.Player == p.Player {
 					pq.Remove(i)
-					break;
+					break
 				}
 			}
 		case task := <-rqTask:
@@ -106,20 +106,20 @@ func masterDispatch() {
 			/* first, scan to see if we have valid pending player for this task */
 			i := pq.Front()
 			for {
-				if (nil == i) {
+				if nil == i {
 					/* Out of players! */
 					/* Append this task to the waiting tasks queue */
 					tq.PushBack(task)
-					break;
+					break
 				}
-				p,_ := i.Value.(*ClientInfo)
+				p, _ := i.Value.(*ClientInfo)
 				if task.IsTarget(p.Player) {
 					/* Found it. */
 					pq.Remove(i)
 					p.TaskQ <- task
-					break;
+					break
 				}
-				i = i.Next();
+				i = i.Next()
 			}
 		case respChan := <-statusRequest:
 			o.Debug("Status!")
@@ -130,7 +130,7 @@ func masterDispatch() {
 
 			idx := 0
 			for i := pq.Front(); i != nil; i = i.Next() {
-				player,_ := i.Value.(*ClientInfo)
+				player, _ := i.Value.(*ClientInfo)
 				response.idlePlayers[idx] = player.Player
 				idx++
 			}

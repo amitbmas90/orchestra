@@ -1,29 +1,29 @@
 /* wire.go
  *
  * Wire Level Encapsulation
-*/
+ */
 
-package orchestra;
+package orchestra
 
 import (
 	"errors"
-	"net"
 	"fmt"
+	"net"
 )
 
 type WirePkt struct {
-	Type	byte
-	Length	uint16
+	Type    byte
+	Length  uint16
 	Payload []byte
 }
 
 const (
-	TypeNop			= 0
-	TypeIdentifyClient	= 1
-	TypeReadyForTask	= 2
-	TypeTaskRequest		= 3
-	TypeTaskResponse	= 4
-	TypeAcknowledgement	= 5
+	TypeNop             = 0
+	TypeIdentifyClient  = 1
+	TypeReadyForTask    = 2
+	TypeTaskRequest     = 3
+	TypeTaskResponse    = 4
+	TypeAcknowledgement = 5
 )
 
 var (
@@ -50,12 +50,12 @@ func (p *WirePkt) Send(c net.Conn) (n int, err error) {
 	preamble[2] = byte(p.Length & 0xFF)
 	ninc, err := c.Write(preamble)
 	n += ninc
-	if (err != nil) {
+	if err != nil {
 		return n, err
 	}
 	ninc, err = c.Write(p.Payload[0:p.Length])
 	n += ninc
-	if (err != nil) {
+	if err != nil {
 		return n, err
 	}
 	return n, nil
@@ -104,4 +104,3 @@ func Receive(c net.Conn) (msg *WirePkt, err error) {
 	/* Decode! */
 	return msg, nil
 }
-

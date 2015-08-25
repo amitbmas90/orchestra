@@ -1,34 +1,33 @@
 /* server.go
  *
  * TLS and Connection Hell.
-*/
+ */
 
 package main
 
 import (
-	"net"
 	"crypto/tls"
-	"fmt"
-	"os"
 	"crypto/x509"
-	o	"orchestra"
+	"fmt"
+	"net"
+	o "orchestra"
+	"os"
 )
 
 var (
-	CACertPool	*x509.CertPool = nil
+	CACertPool *x509.CertPool = nil
 )
-
 
 func ServiceRequests() {
 	var sockConfig tls.Config
 
 	// resolve the bind address
 	bindAddressStr := GetStringOpt("bind address")
-	var bindAddr *net.IPAddr = nil
-	if (bindAddressStr != "") {
+	var bindAddr *net.IPAddr
+	if bindAddressStr != "" {
 		var err error
 		bindAddr, err = net.ResolveIPAddr("ip", bindAddressStr)
-		if (err != nil) {
+		if err != nil {
 			o.Warn("Ignoring bind address.  Couldn't resolve \"%s\": %s", bindAddressStr, err)
 		} else {
 			bindAddr = nil
@@ -83,7 +82,7 @@ func ServiceRequests() {
 
 	/* convert the bindAddress to a string suitable for the Listen call */
 	var laddr string
-	if (bindAddr == nil) {
+	if bindAddr == nil {
 		laddr = fmt.Sprintf(":%d", o.DefaultMasterPort)
 	} else {
 		laddr = fmt.Sprintf("%s:%d", bindAddr.String(), o.DefaultMasterPort)
@@ -100,6 +99,3 @@ func ServiceRequests() {
 		HandleConnection(c)
 	}
 }
-
-
-

@@ -3,14 +3,13 @@
 package main
 
 import (
-	"os"
 	"encoding/json"
 )
 
 type JobState int
 
 const (
-	JOB_STATE_INVALID	= JobState(iota)
+	JOB_STATE_INVALID = JobState(iota)
 	// Job is pending resolution
 	JOB_PENDING
 	// Job has completed and has no failures.
@@ -73,4 +72,3 @@ func (js *JobState) UnmarshalJSON(in []byte) (err error) {
 	}
 	return nil
 }
-

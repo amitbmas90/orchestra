@@ -5,28 +5,28 @@
 package main
 
 import (
-	"io"
-	"net"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
+	"net"
 	"os"
 	"strconv"
 )
 
 type StatusRequest struct {
-	Op	string	`json:"op"`
-	Id	uint64	`json:"id"`
+	Op string `json:"op"`
+	Id uint64 `json:"id"`
 }
 
 type PlayerStatus struct {
-	Status		*string		`json:"status"`
-	Response	map[string]*string	`json:"response"`
+	Status   *string            `json:"status"`
+	Response map[string]*string `json:"response"`
 }
 
 type StatusResponse struct {
-	Status		*string		`json:"status"`
-	Players		map[string]*PlayerStatus	`json:"players"`
+	Status  *string                  `json:"status"`
+	Players map[string]*PlayerStatus `json:"players"`
 }
 
 var (
@@ -118,7 +118,7 @@ func main() {
 	}
 
 	// coerce field 0 back into a string.
-	rerr,ok := response[0].(string)
+	rerr, ok := response[0].(string)
 	if ok {
 		if rerr == "OK" {
 			// all OK, process the sresp.
@@ -129,7 +129,7 @@ func main() {
 			os.Exit(1)
 		}
 	} else {
-		fmt.Fprintf(os.Stderr, "Couldn't unmarshal response correctly.\n");
+		fmt.Fprintf(os.Stderr, "Couldn't unmarshal response correctly.\n")
 		os.Exit(1)
 	}
 }

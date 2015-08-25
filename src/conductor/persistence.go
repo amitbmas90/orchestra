@@ -3,15 +3,15 @@
 package main
 
 import (
-	"fmt"
-	"path"
-	"os"
-	"unicode"
-	"strconv"
-	"sync/atomic"
 	"bufio"
-	"strings"
+	"fmt"
 	o "orchestra"
+	"os"
+	"path"
+	"strconv"
+	"strings"
+	"sync/atomic"
+	"unicode"
 )
 
 // changing this will result in fire.  you have been warned.
@@ -36,12 +36,11 @@ func GetSpoolDirectory() string {
 	return spoolDirectory
 }
 
-
 const (
-	IdCheckpointSafetySkip = 10e4  // Skip 10e4 entries if orchestra didn't shutdown cleanly for safety.
+	IdCheckpointSafetySkip = 10e4 // Skip 10e4 entries if orchestra didn't shutdown cleanly for safety.
 )
 
-var lastId uint64 = 0
+var lastId uint64
 
 func checkpointPath() string {
 	return path.Join(spoolDirectory, "last_id.checkpoint")
@@ -68,11 +67,11 @@ func loadLastId() {
 		if !os.IsNotExist(err) {
 			o.Fail("Found checkpoint file, but couldn't open it: %s", err)
 		}
-		fh,err := os.Open(savePath())
+		fh, err := os.Open(savePath())
 		if err != nil {
 			if os.IsNotExist(err) {
-				lastId = 0;
-				return;
+				lastId = 0
+				return
 			}
 			o.MightFail(err, "Couldn't open last_id file")
 		}
@@ -117,7 +116,7 @@ func NextRequestId() uint64 {
 func FilenameForJobId(jobid uint64) (fullpath string) {
 	fnbits := make([]string, bucketDepth+1)
 	for i := 0; i < bucketDepth; i++ {
-		fnbits[i] = fmt.Sprintf("%01X", (jobid >> uint(i*4)) & 0xF)
+		fnbits[i] = fmt.Sprintf("%01X", (jobid>>uint(i*4))&0xF)
 	}
 	fnbits[bucketDepth] = fmt.Sprintf("%016X", jobid)
 
@@ -127,7 +126,7 @@ func FilenameForJobId(jobid uint64) (fullpath string) {
 func makeSpoolDirInner(prefix string, depth int) {
 	for i := 0; i < 16; i++ {
 		dirname := path.Join(prefix, fmt.Sprintf("%01X", i))
-		if (depth == 1) {
+		if depth == 1 {
 			err := os.MkdirAll(dirname, 0700)
 			o.MightFail(err, "Couldn't make directory building spool tree")
 		} else {
@@ -170,11 +169,11 @@ func loadSpoolFiles(dirname string, depth int) {
 			if n.Mode().IsDir() {
 				// if not a single character, it's not a spool node.
 				if len(n.Name()) != 1 {
-					continue;
+					continue
 				}
 				if n.Name() == "." {
 					// we're not interested in .
-					continue;
+					continue
 				}
 				nrunes := []rune(n.Name())
 				if unicode.Is(unicode.ASCII_Hex_Digit, nrunes[0]) {
@@ -222,7 +221,7 @@ func loadSpoolFiles(dirname string, depth int) {
 // This takes an unmarshall'd job and stuffs it back into the job state.
 func RestoreJobState(job *JobRequest) bool {
 	// check the valid players list.
-	var playersout []string = nil
+	var playersout []string
 	resultsout := make(map[string]*TaskResponse)
 	for _, p := range job.Players {
 		if HostAuthorised(p) {
@@ -259,7 +258,7 @@ func RestoreJobState(job *JobRequest) bool {
 
 	// now, check the task data.  ONEOF jobs are allowed to
 	// reset tasks that have never been sent.
-	var tasksout []*TaskRequest = nil
+	var tasksout []*TaskRequest
 	for _, t := range job.Tasks {
 		// rebuild the return link
 		t.job = job
@@ -290,7 +289,7 @@ func RestoreJobState(job *JobRequest) bool {
 	// put the job back into the system.
 	JobAdd(job)
 	JobReviewState(job.Id)
-	if (!job.State.Finished()) {
+	if !job.State.Finished() {
 		// now, redispatch anything that's not actually finished.
 		for _, t := range job.Tasks {
 			if !t.State.Finished() {

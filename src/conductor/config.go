@@ -1,11 +1,11 @@
 package main
 
 import (
-	"os"
 	"bufio"
-	o "orchestra"
-	"strings"
 	"github.com/kuroneko/configureit"
+	o "orchestra"
+	"os"
+	"strings"
 )
 
 var configFile *configureit.Config = configureit.New()
@@ -32,7 +32,6 @@ func GetStringOpt(key string) string {
 	}
 	return strings.TrimSpace(sopt.Value)
 }
-
 
 func GetCACertList() []string {
 	cnode := configFile.Get("ca certificates")
@@ -64,31 +63,31 @@ func ConfigLoad() {
 
 	ahmap := make(map[string]bool)
 	for err = nil; err == nil; {
-		var lb		[]byte
-		var prefix	bool
+		var lb []byte
+		var prefix bool
 
 		lb, prefix, err = pbr.ReadLine()
 
 		if nil == lb {
-			break;
+			break
 		}
 		if prefix {
 			o.Fail("ConfigLoad: Short Read (prefix only)!")
 		}
-		
+
 		line := strings.TrimSpace(string(lb))
 		if line == "" {
-			continue;
+			continue
 		}
 		if line[0] == '#' {
-			continue;
+			continue
 		}
 		ahmap[line] = true
 	}
 	// convert newAuthorisedHosts to a slice
 	authorisedHosts := make([]string, len(ahmap))
 	idx := 0
-	for k,_ := range ahmap {
+	for k, _ := range ahmap {
 		authorisedHosts[idx] = k
 		idx++
 	}
@@ -97,7 +96,6 @@ func ConfigLoad() {
 	// set the spool directory
 	SetSpoolDirectory(GetStringOpt("conductor state path"))
 }
-
 
 func HostAuthorised(hostname string) (r bool) {
 	/* if we haven't loaded the configuration, nobody is authorised */

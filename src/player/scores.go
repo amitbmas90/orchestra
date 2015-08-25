@@ -9,32 +9,32 @@
 package main
 
 import (
-	"os"
-	"io"
-	"strings"
-	o "orchestra"
-	"path"
 	"github.com/kuroneko/configureit"
+	"io"
+	o "orchestra"
+	"os"
+	"path"
+	"strings"
 )
 
 type ScoreInfo struct {
-	Name		string
-	Executable	string
-	InitialPwd	string
-	InitialEnv	map[string]string
+	Name       string
+	Executable string
+	InitialPwd string
+	InitialEnv map[string]string
 
-	Interface	string
+	Interface string
 
-	Config		*configureit.Config
+	Config *configureit.Config
 }
 
 type ScoreExecution struct {
-	Score	*ScoreInfo
-	Task	*TaskRequest
+	Score *ScoreInfo
+	Task  *TaskRequest
 }
 
 func NewScoreInfo() (si *ScoreInfo) {
-	si = new (ScoreInfo)
+	si = new(ScoreInfo)
 	si.InitialEnv = make(map[string]string)
 
 	config := NewScoreInfoConfig()
@@ -72,7 +72,7 @@ func (si *ScoreInfo) updateFromConfig(config *configureit.Config) {
 }
 
 var (
-	Scores		map[string]*ScoreInfo
+	Scores map[string]*ScoreInfo
 )
 
 func ScoreConfigure(si *ScoreInfo, r io.Reader) {
@@ -113,7 +113,7 @@ func LoadScores() {
 		// check for the executionable bit
 		if (files[i].Mode().Perm() & 0111) != 0 {
 			fullpath := path.Join(scoreDirectory, files[i].Name())
-			conffile := fullpath+".conf"
+			conffile := fullpath + ".conf"
 			o.Warn("Considering %s as score", files[i].Name())
 
 			si := NewScoreInfo()

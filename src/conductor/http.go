@@ -1,7 +1,7 @@
 /* http.go
  *
  * HTTP status server.
-*/
+ */
 
 package main
 
@@ -25,7 +25,7 @@ func returnStatus(w http.ResponseWriter, r *http.Request) {
 	for i = 0; i < len(players); i++ {
 		fmt.Fprintf(w, "<li>%s</li>\n", players[i])
 	}
-	if (i == 0) {
+	if i == 0 {
 		fmt.Fprintf(w, "<li>none</li>")
 	}
 	fmt.Fprintf(w, "</ul>")
@@ -36,4 +36,3 @@ func httpServer() {
 	http.HandleFunc("/", returnStatus)
 	http.ListenAndServe(laddr, nil)
 }
-

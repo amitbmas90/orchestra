@@ -5,12 +5,12 @@
 package main
 
 import (
-	o "orchestra"
-	"strings"
-	"github.com/kuroneko/configureit"
 	"crypto/tls"
 	"crypto/x509"
+	"github.com/kuroneko/configureit"
+	o "orchestra"
 	"os"
+	"strings"
 )
 
 var configFile = configureit.New()

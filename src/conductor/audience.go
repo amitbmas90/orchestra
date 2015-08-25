@@ -1,34 +1,34 @@
 /* audience.go
-*/
+ */
 
 package main
 
 import (
-	"io"
 	"encoding/json"
+	"io"
 	"net"
-	"os"
 	o "orchestra"
+	"os"
 	"strings"
 )
 
 type GenericJsonRequest struct {
-	Op		*string		`json:"op"`
-	Score		*string		`json:"score"`
-	Players		[]string	`json:"players"`
-	Scope		*JobScope	`json:"scope"`
-	Params		map[string]string	`json:"params"`
-	Id		*uint64		`json:"id"`
+	Op      *string           `json:"op"`
+	Score   *string           `json:"score"`
+	Players []string          `json:"players"`
+	Scope   *JobScope         `json:"scope"`
+	Params  map[string]string `json:"params"`
+	Id      *uint64           `json:"id"`
 }
 
 type JsonPlayerStatus struct {
-	Status		ResponseState		`json:"status"`
-	Response	map[string]string	`json:"response"`
+	Status   ResponseState     `json:"status"`
+	Response map[string]string `json:"response"`
 }
 
 type JsonStatusResponse struct {
-	Status		JobState			`json:"status"`
-	Players		map[string]*JsonPlayerStatus	`json:"players"`
+	Status  JobState                     `json:"status"`
+	Players map[string]*JsonPlayerStatus `json:"players"`
 }
 
 func NewJsonStatusResponse() (jsr *JsonStatusResponse) {
@@ -82,7 +82,7 @@ func handleAudienceRequest(c net.Conn) {
 				if nil != tr {
 					presp := NewJsonPlayerStatus()
 					presp.Status = tr.State
-					for k,v:=range(tr.Response) {
+					for k, v := range tr.Response {
 						presp.Response[k] = v
 					}
 					iresp.Players[resnames[i]] = presp
@@ -135,7 +135,7 @@ func handleAudienceRequest(c net.Conn) {
 }
 
 func sendQueueSuccessResponse(job *JobRequest, enc *json.Encoder) {
-	resp := make([]interface{},2)
+	resp := make([]interface{}, 2)
 	resperr := new(string)
 	*resperr = "OK"
 	resp[0] = resperr
@@ -152,7 +152,7 @@ func sendQueueSuccessResponse(job *JobRequest, enc *json.Encoder) {
 }
 
 func sendQueueFailureResponse(reason string, enc *json.Encoder) {
-	resp := make([]interface{},2)
+	resp := make([]interface{}, 2)
 	resperr := new(string)
 	*resperr = "Error"
 	resp[0] = resperr

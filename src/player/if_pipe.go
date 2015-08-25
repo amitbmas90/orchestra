@@ -8,11 +8,11 @@
 package main
 
 import (
-	"strings"
 	"bufio"
 	"io"
-	"os"
 	o "orchestra"
+	"os"
+	"strings"
 )
 
 const (
@@ -24,8 +24,8 @@ func init() {
 }
 
 type PipeInterface struct {
-	task	*TaskRequest
-	pipew	*os.File
+	task  *TaskRequest
+	pipew *os.File
 }
 
 func newPipeInterface(task *TaskRequest) (iface ScoreInterface) {
@@ -34,7 +34,6 @@ func newPipeInterface(task *TaskRequest) (iface ScoreInterface) {
 
 	return ei
 }
-
 
 // pipeListener is the goroutine that sits on the stdout pipe and
 // processes what it sees.
@@ -59,10 +58,9 @@ func pipeListener(task *TaskRequest, outpipe *os.File) {
 	}
 }
 
-
 func (ei *PipeInterface) Prepare() bool {
 	lr, lw, err := os.Pipe()
-	if (err != nil) {
+	if err != nil {
 		return false
 	}
 	// save the writing end of the pipe so we can close our local end of it during cleanup.
@@ -76,7 +74,7 @@ func (ei *PipeInterface) Prepare() bool {
 
 func (ei *PipeInterface) SetupProcess() (ee *ExecutionEnvironment) {
 	ee = NewExecutionEnvironment()
-	for k,v := range ei.task.Params {
+	for k, v := range ei.task.Params {
 		ee.Environment[pipeEnvironmentPrefix+k] = v
 	}
 	ee.Files = make([]*os.File, 2)

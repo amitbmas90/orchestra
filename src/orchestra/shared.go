@@ -2,19 +2,19 @@
 package orchestra
 
 import (
-	"os"
-	"net"
-	"log/syslog"
 	"fmt"
+	"log/syslog"
+	"net"
+	"os"
 	"runtime/debug"
 )
 
 const (
 	DefaultMasterPort = 2258
-	DefaultHTTPPort = 2259
+	DefaultHTTPPort   = 2259
 )
 
-var	logWriter  *syslog.Writer = nil
+var logWriter *syslog.Writer
 
 func SetLogName(name string) {
 	if nil != logWriter {
@@ -25,7 +25,6 @@ func SetLogName(name string) {
 	logWriter, err = syslog.New(syslog.LOG_DEBUG, name)
 	MightFail(err, "Couldn't reopen syslog")
 }
-
 
 func Debug(format string, args ...interface{}) {
 	if nil != logWriter {
@@ -45,16 +44,16 @@ func Warn(format string, args ...interface{}) {
 	}
 }
 
-func Fail(mesg string, args ...interface {}) {
+func Fail(mesg string, args ...interface{}) {
 	if nil != logWriter {
 		logWriter.Err(fmt.Sprintf(mesg, args...))
 	}
-	fmt.Fprintf(os.Stderr, "ERR: "+mesg+"\n", args...);
+	fmt.Fprintf(os.Stderr, "ERR: "+mesg+"\n", args...)
 	os.Exit(1)
 }
 
-func MightFail(err error, mesg string, args ...interface {}) {
-	if (nil != err) {
+func MightFail(err error, mesg string, args ...interface{}) {
+	if nil != err {
 		imesg := fmt.Sprintf(mesg, args...)
 		Fail("%s: %s", imesg, err.Error())
 	}

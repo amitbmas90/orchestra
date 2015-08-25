@@ -3,12 +3,11 @@
 package main
 
 import (
-	"os"
 	"encoding/json"
 )
 
 const (
-	SCOPE_INVALID		= JobScope(iota)
+	SCOPE_INVALID = JobScope(iota)
 	SCOPE_ONEOF
 	SCOPE_ALLOF
 )

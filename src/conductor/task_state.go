@@ -9,7 +9,7 @@ import (
 type TaskState int
 
 const (
-	TASK_INVALID		= TaskState(iota)
+	TASK_INVALID = TaskState(iota)
 	// Task is fresh and has never been sent to the client.  It can be rescheduled still.
 	TASK_QUEUED
 	// Task has been transmitted at least once

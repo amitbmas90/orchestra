@@ -3,16 +3,16 @@
 package main
 
 import (
-	"io"
-	"os"
 	"bufio"
-	"strings"
+	"io"
 	o "orchestra"
+	"os"
+	"strings"
 	"syscall"
 )
 
 func ExecuteTask(task *TaskRequest) <-chan *TaskResponse {
-	complete  := make(chan *TaskResponse, 1)
+	complete := make(chan *TaskResponse, 1)
 	go doExecution(task, complete)
 
 	return complete
@@ -36,11 +36,11 @@ func batchLogger(jobid uint64, errpipe *os.File) {
 }
 
 func peSetEnv(env []string, key string, value string) []string {
-	mkey := key+"="
+	mkey := key + "="
 	found := false
 	for i, v := range env {
 		if strings.HasPrefix(v, mkey) {
-			env[i] = key+"="+value
+			env[i] = key + "=" + value
 			found = true
 			break
 		}
@@ -53,7 +53,7 @@ func peSetEnv(env []string, key string, value string) []string {
 
 func doExecution(task *TaskRequest, completionChannel chan<- *TaskResponse) {
 	// we must notify the parent when we exit.
-	defer func(c chan<- *TaskResponse, task *TaskRequest) { c <- task.MyResponse }(completionChannel,task)
+	defer func(c chan<- *TaskResponse, task *TaskRequest) { c <- task.MyResponse }(completionChannel, task)
 
 	// first of all, verify that the score exists at all.
 	score, exists := Scores[task.Score]
@@ -98,7 +98,7 @@ func doExecution(task *TaskRequest, completionChannel chan<- *TaskResponse) {
 	procenv.Files = make([]*os.File, 3)
 
 	// first off, attach /dev/null to stdin and stdout
-	devNull, err := os.OpenFile(os.DevNull, os.O_RDWR | os.O_APPEND, 0666)
+	devNull, err := os.OpenFile(os.DevNull, os.O_RDWR|os.O_APPEND, 0666)
 	o.MightFail(err, "couldn't open DevNull")
 	defer devNull.Close()
 	for i := 0; i < 2; i++ {
@@ -120,7 +120,7 @@ func doExecution(task *TaskRequest, completionChannel chan<- *TaskResponse) {
 			}
 		}
 	}
-	var args []string = nil
+	var args []string
 	args = append(args, eenv.Arguments...)
 
 	o.Info("job%d: Executing %s", task.Id, score.Executable)

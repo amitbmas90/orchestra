@@ -12,13 +12,13 @@ import (
 )
 
 var (
-	interfaces	= make(map[string]func(*TaskRequest)(ScoreInterface))
+	interfaces = make(map[string]func(*TaskRequest) ScoreInterface)
 )
 
 type ExecutionEnvironment struct {
-	Environment	map[string]string
-	Arguments	[]string
-	Files		[]*os.File
+	Environment map[string]string
+	Arguments   []string
+	Files       []*os.File
 }
 
 func NewExecutionEnvironment() (ee *ExecutionEnvironment) {
@@ -53,7 +53,7 @@ func HasInterface(ifname string) bool {
 	return exists
 }
 
-func RegisterInterface(ifname string, initfunc func(*TaskRequest)(ScoreInterface)) {
+func RegisterInterface(ifname string, initfunc func(*TaskRequest) ScoreInterface) {
 	_, exists := interfaces[ifname]
 	if exists {
 		o.Assert("Multiple attempts to register %s interface", ifname)

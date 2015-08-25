@@ -8,11 +8,11 @@ import (
 )
 
 type TaskResponse struct {
-	id		uint64
-	State		ResponseState			`json:"state"`
-	Response	map[string]string		`json:"response"`
+	id       uint64
+	State    ResponseState     `json:"state"`
+	Response map[string]string `json:"response"`
 	// player only fields
-	RetryTime	time.Time			`json:"retrytime"`
+	RetryTime time.Time `json:"retrytime"`
 }
 
 // Response related magic
@@ -36,11 +36,10 @@ func (resp *TaskResponse) CanRetry() bool {
 	return resp.State.CanRetry()
 }
 
-
 func ResponseFromProto(ptr *o.ProtoTaskResponse) (r *TaskResponse) {
 	r = new(TaskResponse)
 
-	switch (*(ptr.Status)) {
+	switch *(ptr.Status) {
 	case o.ProtoTaskResponse_JOB_INPROGRESS:
 		r.State = RESP_RUNNING
 	case o.ProtoTaskResponse_JOB_SUCCESS:
@@ -86,4 +85,3 @@ func (resp *TaskResponse) Encode() (ptr *o.ProtoTaskResponse) {
 
 	return ptr
 }
-

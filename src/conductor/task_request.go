@@ -9,10 +9,10 @@ import (
 )
 
 type TaskRequest struct {
-	job		*JobRequest
-	Player		string				`json:"player"`
-	State		TaskState			`json:"state"`
-	RetryTime	time.Time			`json:"retrytime"`
+	job       *JobRequest
+	Player    string    `json:"player"`
+	State     TaskState `json:"state"`
+	RetryTime time.Time `json:"retrytime"`
 }
 
 func NewTaskRequest() (tr *TaskRequest) {

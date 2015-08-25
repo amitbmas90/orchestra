@@ -4,31 +4,31 @@
 package main
 
 import (
-	"sort"
 	"encoding/json"
-	"path"
-	"os"
 	"io"
 	o "orchestra"
+	"os"
+	"path"
+	"sort"
 	"time"
 )
 
 type JobRequest struct {
-	Score		string				`json:"score"`
-	Scope		JobScope			`json:"scope"`
-	Players		[]string			`json:"players"`
-	Id		uint64				`json:"id"`
-	State		JobState			`json:"state"`
-	Params		map[string]string		`json:"params"`
-	Tasks		[]*TaskRequest			`json:"tasks"`
+	Score   string            `json:"score"`
+	Scope   JobScope          `json:"scope"`
+	Players []string          `json:"players"`
+	Id      uint64            `json:"id"`
+	State   JobState          `json:"state"`
+	Params  map[string]string `json:"params"`
+	Tasks   []*TaskRequest    `json:"tasks"`
 	// you need to use the registry to access these - only public for
 	// marshalling use.
-	Results		map[string]*TaskResponse	`json:"results"`
+	Results map[string]*TaskResponse `json:"results"`
 	// private:
 
 	// Timeout for autoexpiry.  Only valid if State if
 	// job.State.Finished() is true.
-	expirytime	time.Time
+	expirytime time.Time
 }
 
 func NewJobRequest() (req *JobRequest) {
@@ -52,11 +52,11 @@ func JobRequestFromReader(src io.Reader) (req *JobRequest, err error) {
 }
 
 func (req *JobRequest) normalise() {
-	if (len(req.Players) > 1) {
+	if len(req.Players) > 1 {
 		/* sort targets so search works */
 		sort.Strings(req.Players)
 	} else {
-		if (req.Scope == SCOPE_ONEOF) {
+		if req.Scope == SCOPE_ONEOF {
 			req.Scope = SCOPE_ALLOF
 		}
 	}
@@ -67,7 +67,7 @@ func (req *JobRequest) MakeTasks() (tasks []*TaskRequest) {
 
 	var numtasks int
 
-	switch (req.Scope) {
+	switch req.Scope {
 	case SCOPE_ONEOF:
 		numtasks = 1
 	case SCOPE_ALLOF:
@@ -78,7 +78,7 @@ func (req *JobRequest) MakeTasks() (tasks []*TaskRequest) {
 	for c := 0; c < numtasks; c++ {
 		t := NewTaskRequest()
 		t.job = req
-		if (req.Scope == SCOPE_ALLOF) {
+		if req.Scope == SCOPE_ALLOF {
 			t.Player = req.Players[c]
 		}
 		tasks[c] = t
@@ -87,14 +87,14 @@ func (req *JobRequest) MakeTasks() (tasks []*TaskRequest) {
 }
 
 func (req *JobRequest) Valid() bool {
-	if (len(req.Players) <= 0) {
+	if len(req.Players) <= 0 {
 		return false
 	}
 	return true
 }
 
 func (req *JobRequest) FilenameForSpool() string {
-	if (req.State == JOB_PENDING) {
+	if req.State == JOB_PENDING {
 		return path.Join(GetSpoolDirectory(), "active", FilenameForJobId(req.Id))
 	}
 	return path.Join(GetSpoolDirectory(), "finished", FilenameForJobId(req.Id))
@@ -114,7 +114,7 @@ func (req *JobRequest) doSerialisation(buf []byte) {
 	fh.Write(buf)
 }
 
-func (req *JobRequest) UpdateInSpool()  {
+func (req *JobRequest) UpdateInSpool() {
 	buf, err := json.MarshalIndent(req, "", "  ")
 	o.MightFail(err, "Failed to marshal job %d", req.Id)
 	//FIXME: should try to do this out of the registry's thread.

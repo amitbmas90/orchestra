@@ -5,24 +5,24 @@
 package main
 
 import (
-	"io"
-	"net"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
+	"net"
 	"os"
 )
 
 type JobRequest struct {
-	Op	string		`json:"op"`
-	Score	string		`json:"score"`
-	Players	[]string	`json:"players"`
-	Scope	string		`json:"scope"`
-	Params	map[string]string	`json:"params"`
+	Op      string            `json:"op"`
+	Score   string            `json:"score"`
+	Players []string          `json:"players"`
+	Scope   string            `json:"scope"`
+	Params  map[string]string `json:"params"`
 }
 
 var (
-	AllOf	     = flag.Bool("all-of", false, "Send request to all named players")
+	AllOf        = flag.Bool("all-of", false, "Send request to all named players")
 	AudienceSock = flag.String("audience-sock", "/var/spool/orchestra/conductor.sock", "Path for the audience submission socket")
 )
 
@@ -62,7 +62,7 @@ func main() {
 	var k int
 	for k = 1; k < len(args); k++ {
 		if args[k] == "!" {
-			break;
+			break
 		}
 		insertionpoint := 0
 		if nil == jr.Players {
@@ -75,14 +75,14 @@ func main() {
 		}
 		jr.Players[insertionpoint] = args[k]
 	}
-	if (k < len(args)) {
+	if k < len(args) {
 		// skip the !
 		k++
-		if (len(args) - (k))%2 != 0 {
+		if (len(args)-(k))%2 != 0 {
 			fmt.Fprintf(os.Stderr, "Error: Odd number of param arguments.\n")
 			os.Exit(1)
 		}
-		for ; k < len(args); k+=2 {
+		for ; k < len(args); k += 2 {
 			jr.Params[args[k]] = args[k+1]
 		}
 	}
@@ -122,7 +122,7 @@ func main() {
 		os.Exit(1)
 	}
 	// coerce field 0 back into a string.
-	rerr,ok := response[0].(string)
+	rerr, ok := response[0].(string)
 	if ok {
 		if rerr == "OK" {
 			// all OK!  get the JobID
@@ -134,7 +134,7 @@ func main() {
 			os.Exit(1)
 		}
 	} else {
-		fmt.Fprintf(os.Stderr, "Couldn't unmarshal response correctly.\n");
+		fmt.Fprintf(os.Stderr, "Couldn't unmarshal response correctly.\n")
 		os.Exit(1)
 	}
 }

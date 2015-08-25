@@ -6,13 +6,12 @@
 package main
 
 import (
-	"os/signal"
-	"os"
-	"syscall"
 	"fmt"
 	o "orchestra"
+	"os"
+	"os/signal"
+	"syscall"
 )
-
 
 // handle the signals.  By default, we ignore everything, but the
 // three terminal signals, HUP, INT, TERM, we want to explicitly

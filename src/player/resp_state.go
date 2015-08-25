@@ -10,7 +10,7 @@ type ResponseState int
 
 const (
 	// Response states
-	RESP_PENDING			= ResponseState(iota)	// internal state, not wire.
+	RESP_PENDING = ResponseState(iota) // internal state, not wire.
 	RESP_RUNNING
 	RESP_FINISHED
 	RESP_FAILED

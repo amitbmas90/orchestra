@@ -13,7 +13,7 @@ func init() {
 }
 
 type EnvInterface struct {
-	task	*TaskRequest
+	task *TaskRequest
 }
 
 func newEnvInterface(task *TaskRequest) (iface ScoreInterface) {
@@ -30,7 +30,7 @@ func (ei *EnvInterface) Prepare() bool {
 
 func (ei *EnvInterface) SetupProcess() (ee *ExecutionEnvironment) {
 	ee = NewExecutionEnvironment()
-	for k,v := range ei.task.Params {
+	for k, v := range ei.task.Params {
 		ee.Environment[envEnvironmentPrefix+k] = v
 	}
 

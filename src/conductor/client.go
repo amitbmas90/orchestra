@@ -1,14 +1,15 @@
 /* client.go
  *
  * Client Handling
-*/
+ */
 
 package main
+
 import (
-	o "orchestra"
-	"net"
-	"time"
 	"crypto/tls"
+	"net"
+	o "orchestra"
+	"time"
 )
 
 const (
@@ -17,15 +18,14 @@ const (
 	OutputQueueDepth = 10               // This needs to be large enough that we don't deadlock on ourself.
 )
 
-
 type ClientInfo struct {
-	Player		string
-	PktOutQ		chan *o.WirePkt
-	PktInQ		chan *o.WirePkt
-	abortQ		chan int
-	TaskQ		chan *TaskRequest
-	connection	net.Conn
-	pendingTasks	map[uint64]*TaskRequest
+	Player       string
+	PktOutQ      chan *o.WirePkt
+	PktInQ       chan *o.WirePkt
+	abortQ       chan int
+	TaskQ        chan *TaskRequest
+	connection   net.Conn
+	pendingTasks map[uint64]*TaskRequest
 }
 
 func NewClientInfo() (client *ClientInfo) {
@@ -44,7 +44,7 @@ func (client *ClientInfo) Abort() {
 	if reg != nil {
 		reg.Disassociate()
 	}
-	client.abortQ <- 1;
+	client.abortQ <- 1
 }
 
 func (client *ClientInfo) Name() (name string) {
@@ -78,7 +78,7 @@ func (client *ClientInfo) SendTask(task *TaskRequest) {
 
 func (client *ClientInfo) GotTask(task *TaskRequest) {
 	/* first up, look at the task state */
-	switch (task.State) {
+	switch task.State {
 	case TASK_QUEUED:
 		fallthrough
 	case TASK_PENDINGRESULT:
@@ -135,7 +135,7 @@ func handleIdentify(client *ClientInfo, message interface{}) {
 	ic, _ := message.(*o.IdentifyClient)
 	o.Info("Client %s: Identified Itself As \"%s\"", client.Name(), *ic.Hostname)
 	client.Player = *ic.Hostname
-	if (!HostAuthorised(client.Player)) {
+	if !HostAuthorised(client.Player) {
 		o.Warn("Client %s: Not Authorised.  Terminating Connection.", client.Name())
 		client.Abort()
 		return
@@ -176,7 +176,7 @@ func handleIllegal(client *ClientInfo, message interface{}) {
 	client.Abort()
 }
 
-func handleResult(client *ClientInfo, message interface{}){
+func handleResult(client *ClientInfo, message interface{}) {
 	jr, _ := message.(*o.ProtoTaskResponse)
 	r := ResponseFromProto(jr)
 	// at this point in time, we only care about terminal
@@ -209,7 +209,7 @@ func handleResult(client *ClientInfo, message interface{}){
 				}
 
 				// next, work out if the job is a retryable failure or not
-				var didretry bool = false
+				var didretry bool
 
 				if r.DidFail() {
 					o.Info("Client %s reports failure for Job %d", client.Name(), r.id)
@@ -240,24 +240,22 @@ func handleResult(client *ClientInfo, message interface{}){
 	}
 }
 
-
-var dispatcher	= map[uint8] func(*ClientInfo,interface{}) {
-	o.TypeNop:		handleNop,
-	o.TypeIdentifyClient:	handleIdentify,
-	o.TypeReadyForTask:	handleReadyForTask,
-	o.TypeTaskResponse:	handleResult,
+var dispatcher = map[uint8]func(*ClientInfo, interface{}){
+	o.TypeNop:            handleNop,
+	o.TypeIdentifyClient: handleIdentify,
+	o.TypeReadyForTask:   handleReadyForTask,
+	o.TypeTaskResponse:   handleResult,
 	/* C->P only messages, should never appear on the wire. */
-	o.TypeTaskRequest:	handleIllegal,
-
+	o.TypeTaskRequest: handleIllegal,
 }
 
 var loopFudge time.Duration = 10 * time.Millisecond /* 10 ms should be enough fudgefactor */
 func clientLogic(client *ClientInfo) {
 	loop := true
 	for loop {
-		var	retryWait <-chan time.Time
-		var	retryTask *TaskRequest = nil
-		if (client.Player != "") {
+		var retryWait <-chan time.Time
+		var retryTask *TaskRequest
+		if client.Player != "" {
 			var waitTime, now time.Time
 			cleanPass := false
 			attempts := 0
@@ -271,7 +269,7 @@ func clientLogic(client *ClientInfo) {
 				// if the client is correctly associated,
 				// evaluate all jobs for outstanding retries,
 				// and work out when our next retry is due.
-				for _,v := range client.pendingTasks {
+				for _, v := range client.pendingTasks {
 					if v.RetryTime.Before(now) {
 						client.SendTask(v)
 						cleanPass = false
@@ -283,10 +281,10 @@ func clientLogic(client *ClientInfo) {
 					}
 				}
 			}
-			if (attempts > 10) {
+			if attempts > 10 {
 				o.Fail("Couldn't find next timeout without restarting excessively.")
 			}
-			if (retryTask != nil) {
+			if retryTask != nil {
 				retryWait = time.After(waitTime.Sub(time.Now()))
 			}
 		}
@@ -300,7 +298,7 @@ func clientLogic(client *ClientInfo) {
 				client.Abort()
 				break
 			}
-			var upkt interface {} = nil
+			var upkt interface{}
 			if p.Length > 0 {
 				var err error
 
@@ -312,7 +310,7 @@ func clientLogic(client *ClientInfo) {
 				}
 			}
 			handler, exists := dispatcher[p.Type]
-			if (exists) {
+			if exists {
 				handler(client, upkt)
 			} else {
 				o.Warn("Unhandled Pkt Type %d", p.Type)
@@ -341,7 +339,6 @@ func clientLogic(client *ClientInfo) {
 
 func clientReceiver(client *ClientInfo) {
 	conn := client.connection
-
 
 	loop := true
 	for loop {
