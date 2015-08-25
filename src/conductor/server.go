@@ -59,7 +59,7 @@ func ServiceRequests() {
 			CACertPool.AppendCertsFromPEM(data)
 		}
 	}
-	sockConfig.RootCAs = CACertPool
+	sockConfig.ClientCAs = CACertPool
 
 	// determine the server hostname.
 	servername := GetStringOpt("server name")
@@ -79,7 +79,7 @@ func ServiceRequests() {
 	}
 
 	// ask the client to authenticate
-	sockConfig.AuthenticateClient = true
+	sockConfig.ClientAuth = tls.RequireAndVerifyClientCert
 
 	/* convert the bindAddress to a string suitable for the Listen call */
 	var laddr string
