@@ -178,7 +178,7 @@ func loadSpoolFiles(dirname string, depth int) {
 					// we're not interested in .
 					continue;
 				}
-				nrunes := []int(n.Name)
+				nrunes := []rune(n.Name)
 				if unicode.Is(unicode.ASCII_Hex_Digit, nrunes[0]) {
 					loadSpoolFiles(abspath, depth-1)
 				} else {
