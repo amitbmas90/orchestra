@@ -81,14 +81,14 @@ func regInternalAdd(hostname string) {
 func regInternalDel(hostname string) {
 	o.Warn("Registry: Deleting Host \"%s\"", hostname)
 	/* remove it from the registry */
-	clientList[hostname] = nil, false
+	delete(clientList, hostname)
 }
 
 func regInternalExpireJob(jobid uint64) {
 	job, exists := jobRegister[jobid]
 	if exists {
 		if job.State.Finished() {
-			jobRegister[jobid] = nil, false
+			delete(jobRegister, jobid)
 		} else {
 			o.Assert("Tried to expire incomplete job.")
 		}
@@ -268,7 +268,7 @@ func regintSyncClients(req *registryRequest, resp *registryResponse) {
 		_, exists := newhosts[k]
 		if exists {
 			// remove it from the newhosts map
-			newhosts[k] = false, false
+			delete(newhosts, k)
 		} else {
 			regInternalDel(k)
 		}

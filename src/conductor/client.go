@@ -257,7 +257,7 @@ func handleResult(client *ClientInfo, message interface{}){
 				// update the job state.
 				JobReviewState(r.id)
 
-				client.pendingTasks[r.id] = nil, false
+				delete(client.pendingTasks, r.id)
 			}
 		}
 	}

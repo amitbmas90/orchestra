@@ -237,7 +237,7 @@ func RestoreJobState(job *JobRequest) bool {
 			}
 			// remove it so we can sweep it in pass2 for
 			// results from old hosts that matter.
-			job.Results[p] = nil, false
+			delete(job.Results, p)
 		}
 	}
 	job.Players = playersout
