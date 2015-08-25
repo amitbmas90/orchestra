@@ -7,7 +7,7 @@ package orchestra;
 
 import (
 	"errors"
-	"goprotobuf.googlecode.com/hg/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 var (
