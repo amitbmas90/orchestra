@@ -3,6 +3,7 @@
 package main
 
 import (
+	"io"
 	"os"
 	"bufio"
 	"strings"
@@ -22,7 +23,7 @@ func batchLogger(jobid uint64, errpipe *os.File) {
 	r := bufio.NewReader(errpipe)
 	for {
 		lb, _, err := r.ReadLine()
-		if err == os.EOF {
+		if err == io.EOF {
 			return
 		}
 		if err != nil {

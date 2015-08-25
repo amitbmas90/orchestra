@@ -10,6 +10,7 @@ package main
 import (
 	"strings"
 	"bufio"
+	"io"
 	"os"
 	o "orchestra"
 )
@@ -43,7 +44,7 @@ func pipeListener(task *TaskRequest, outpipe *os.File) {
 	r := bufio.NewReader(outpipe)
 	for {
 		lb, _, err := r.ReadLine()
-		if err == os.EOF {
+		if err == io.EOF {
 			return
 		}
 		if err != nil {
