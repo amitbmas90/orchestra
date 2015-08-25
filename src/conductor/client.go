@@ -8,7 +8,6 @@ import (
 	o "orchestra"
 	"net"
 	"time"
-	"os"
 	"crypto/tls"
 	"crypto/x509"
 )
@@ -326,7 +325,7 @@ func clientLogic(client *ClientInfo) {
 			}
 			var upkt interface {} = nil
 			if p.Length > 0 {
-				var err os.Error
+				var err error
 
 				upkt, err = p.Decode()
 				if err != nil {

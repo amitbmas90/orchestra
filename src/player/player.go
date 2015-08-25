@@ -4,12 +4,12 @@
 package main
 
 import (
-	"os"
 	"fmt"
 	"flag"
 	o	"orchestra"
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"net"
 	"time"
 	"container/list"
@@ -42,7 +42,7 @@ var (
 	unacknowledgedQueue	= list.New()
 	newConnection		= make(chan *NewConnectionInfo)
 	pendingTaskRequest	= false
-	InvalidValueError	= os.NewError("Invalid value")
+	InvalidValueError	= errors.New("Invalid value")
 )
 
 func getNextPendingTask() (task *TaskRequest) {
@@ -327,7 +327,7 @@ func ProcessingLoop() {
 			}
 			var upkt interface{} = nil
 			if p.Length > 0 {
-				var err os.Error
+				var err error
 				upkt, err = p.Decode()
 				o.MightFail(err, "Couldn't decode packet from master")
 			}

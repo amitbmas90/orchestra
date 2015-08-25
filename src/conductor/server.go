@@ -26,7 +26,7 @@ func ServiceRequests() {
 	bindAddressStr := GetStringOpt("bind address")
 	var bindAddr *net.IPAddr = nil
 	if (bindAddressStr != "") {
-		var err os.Error
+		var err error
 		bindAddr, err = net.ResolveIPAddr("ip", bindAddressStr)
 		if (err != nil) {
 			o.Warn("Ignoring bind address.  Couldn't resolve \"%s\": %s", bindAddressStr, err)

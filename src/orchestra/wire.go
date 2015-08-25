@@ -6,7 +6,7 @@
 package orchestra;
 
 import (
-	"os"
+	"errors"
 	"net"
 	"fmt"
 )
@@ -27,8 +27,8 @@ const (
 )
 
 var (
-	ErrMalformedMessage = os.NewError("Malformed Message")
-	ErrUnknownMessage   = os.NewError("Unknown Message")
+	ErrMalformedMessage = errors.New("Malformed Message")
+	ErrUnknownMessage   = errors.New("Unknown Message")
 )
 
 func (p *WirePkt) ValidUnidentified() bool {
@@ -42,7 +42,7 @@ func (p *WirePkt) ValidUnidentified() bool {
 	return false
 }
 
-func (p *WirePkt) Send(c net.Conn) (n int, err os.Error) {
+func (p *WirePkt) Send(c net.Conn) (n int, err error) {
 	n = 0
 	preamble := make([]byte, 3)
 	preamble[0] = p.Type
@@ -75,7 +75,7 @@ func (p *WirePkt) Dump() {
 	fmt.Println()
 }
 
-func Receive(c net.Conn) (msg *WirePkt, err os.Error) {
+func Receive(c net.Conn) (msg *WirePkt, err error) {
 	msg = new(WirePkt)
 	preamble := make([]byte, 3)
 

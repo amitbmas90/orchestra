@@ -3,7 +3,6 @@
 package main
 
 import (
-	"os"
 	"json"
 )
 
@@ -38,7 +37,7 @@ func (rs ResponseState) String() (strout string) {
 	return ""
 }
 
-func (rs ResponseState) MarshalJSON() (out []byte, err os.Error) {
+func (rs ResponseState) MarshalJSON() (out []byte, err error) {
 	strout := rs.String()
 	if strout != "" {
 		return json.Marshal(strout)
@@ -46,7 +45,7 @@ func (rs ResponseState) MarshalJSON() (out []byte, err os.Error) {
 	return nil, InvalidValueError
 }
 
-func (rs ResponseState) UnmarshalJSON(in []byte) (err os.Error) {
+func (rs ResponseState) UnmarshalJSON(in []byte) (err error) {
 	var statestr string
 	err = json.Unmarshal(in, &statestr)
 	if err != nil {

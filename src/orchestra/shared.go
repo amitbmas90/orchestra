@@ -21,7 +21,7 @@ func SetLogName(name string) {
 		logWriter.Close()
 		logWriter = nil
 	}
-	var err os.Error
+	var err error
 	logWriter, err = syslog.New(syslog.LOG_DEBUG, name)
 	MightFail(err, "Couldn't reopen syslog")
 }
@@ -53,10 +53,10 @@ func Fail(mesg string, args ...interface {}) {
 	os.Exit(1)
 }
 
-func MightFail(err os.Error, mesg string, args ...interface {}) {
+func MightFail(err error, mesg string, args ...interface {}) {
 	if (nil != err) {
 		imesg := fmt.Sprintf(mesg, args...)
-		Fail("%s: %s", imesg, err.String())
+		Fail("%s: %s", imesg, err.Error())
 	}
 }
 

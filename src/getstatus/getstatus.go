@@ -55,7 +55,7 @@ func main() {
 	}
 
 	sr := NewStatusRequest()
-	var err os.Error
+	var err error
 	sr.Id, err = strconv.Atoui64(flag.Arg(0))
 	if nil != err {
 		fmt.Fprintf(os.Stderr, "Failed to parse JobID: %s\n", err)
