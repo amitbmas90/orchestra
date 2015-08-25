@@ -59,7 +59,7 @@ func loadLastId() {
 		// we have a checkpoint file.  blah.
 		cbio := bufio.NewReader(fh)
 		l, err := cbio.ReadString('\n')
-		lastId, err = strconv.Atoui64(strings.TrimSpace(l))
+		lastId, err = strconv.ParseUint(strings.TrimSpace(l), 10, 64)
 		if err != nil {
 			o.Fail("Couldn't read Last ID from checkpoint file.  Aborting for safety.")
 		}
@@ -79,7 +79,7 @@ func loadLastId() {
 		defer fh.Close()
 		cbio := bufio.NewReader(fh)
 		l, err := cbio.ReadString('\n')
-		lastId, err = strconv.Atoui64(strings.TrimSpace(l))
+		lastId, err = strconv.ParseUint(strings.TrimSpace(l), 10, 64)
 		if err != nil {
 			o.Fail("Couldn't read Last ID from last_id.  Aborting for safety.")
 		}
@@ -193,7 +193,7 @@ func loadSpoolFiles(dirname string, depth int) {
 					shuffleToCorrupted(abspath, "Filename incorrect length")
 					continue
 				}
-				id, err := strconv.Btoui64(n.Name(), 16)
+				id, err := strconv.ParseUint(n.Name(), 16, 64)
 				if err != nil {
 					shuffleToCorrupted(abspath, "Invalid Filename")
 					continue
