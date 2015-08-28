@@ -30,7 +30,7 @@ type StatusResponse struct {
 }
 
 var (
-	AudienceSock = flag.String("audience-sock", "/var/spool/orchestra/conductor.sock", "Path for the audience submission socket")
+	AudienceSock = flag.String("audience-sock", "/var/run/orchestra/conductor.sock", "Path for the audience submission socket")
 )
 
 func NewStatusRequest() (sr *StatusRequest) {

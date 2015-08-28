@@ -3,7 +3,7 @@
 import socket
 import json
 
-DEFAULT_SOCKET_PATH="/var/spool/orchestra/conductor.sock"
+DEFAULT_SOCKET_PATH="/var/run/orchestra/conductor.sock"
 
 class ServerError(Exception):
     pass

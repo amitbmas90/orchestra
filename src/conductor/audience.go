@@ -9,7 +9,9 @@ import (
 	"net"
 	o "orchestra"
 	"os"
+	"path"
 	"strings"
+	"syscall"
 )
 
 type GenericJsonRequest struct {
@@ -186,17 +188,14 @@ func UnixAudienceListener(sockaddr string) {
 			o.Fail("%s exists and is not a socket", sockaddr)
 		}
 	}
+	err = os.MkdirAll(path.Dir(sockaddr), 0755)
+	o.MightFail(err, "Couldn't create socket directory")
 	laddr, err := net.ResolveUnixAddr("unix", sockaddr)
 	o.MightFail(err, "Couldn't resolve audience socket address")
+	old_umask := syscall.Umask(0077)
+	defer syscall.Umask(old_umask)
 	l, err := net.ListenUnix("unix", laddr)
 	o.MightFail(err, "Couldn't start audience unixsock listener")
-	// Fudge the permissions on the unixsock!
-	fi, err = os.Stat(sockaddr)
-	if err == nil {
-		os.Chmod(sockaddr, fi.Mode()|0777)
-	} else {
-		o.Warn("Couldn't fudge permission on audience socket: %s", err)
-	}
 
 	// make sure we clean up the unix socket when we die.
 	defer l.Close()

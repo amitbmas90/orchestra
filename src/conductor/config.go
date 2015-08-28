@@ -16,7 +16,7 @@ func init() {
 	configFile.Add("ca certificates", configureit.NewPathListOption(nil))
 	configFile.Add("bind address", configureit.NewStringOption(""))
 	configFile.Add("server name", configureit.NewStringOption(""))
-	configFile.Add("audience socket path", configureit.NewStringOption("/var/spool/orchestra/conductor.sock"))
+	configFile.Add("audience socket path", configureit.NewStringOption("/var/run/orchestra/conductor.sock"))
 	configFile.Add("conductor state path", configureit.NewStringOption("/var/spool/orchestra"))
 	configFile.Add("player file path", configureit.NewStringOption("/etc/orchestra/players"))
 }
