@@ -7,6 +7,8 @@ import (
 	"errors"
 	"flag"
 	o "orchestra"
+	"os"
+	"syscall"
 )
 
 var (
@@ -30,6 +32,10 @@ func main() {
 	// do an initial configuration load - must happen before
 	// MakeSpoolDir and InitDispatch()
 	ConfigLoad()
+
+	// Clean up our environment
+	os.Chdir("/")
+	syscall.Umask(0000)
 
 	// Build the Spool Tree if necessary
 	MakeSpoolDir()

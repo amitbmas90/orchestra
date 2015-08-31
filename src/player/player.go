@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"net"
 	o "orchestra"
+	"os"
+	"syscall"
 	"time"
 )
 
@@ -365,6 +367,9 @@ func main() {
 	o.SetLogName("player")
 
 	flag.Parse()
+
+	os.Chdir("/")
+	syscall.Umask(0000)
 
 	ConfigLoad()
 	LoadScores()
