@@ -25,22 +25,16 @@ func signalHandler() {
 
 		ux, ok := sig.(syscall.Signal)
 		if !ok {
-			o.Warn("Couldn't handle signal %s, Coercion failed", sig)
+			o.Warn("Couldn't handle signal %s, coercion failed", sig)
 			continue
 		}
 
 		switch ux {
 		case syscall.SIGHUP:
-			o.Warn("Reloading Configuration")
+			o.Info("Reloading configuration")
 			reloadScores <- 1
-		case syscall.SIGINT:
-			fmt.Fprintln(os.Stderr, "Interrupt Received - Terminating")
-			//FIXME: Gentle Shutdown
-			os.Exit(1)
-		case syscall.SIGTERM:
-			fmt.Fprintln(os.Stderr, "Terminate Received - Terminating")
-			//FIXME: Gentle Shutdown
-			os.Exit(2)
+		case syscall.SIGINT, syscall.SIGTERM:
+			os.Exit(0)
 		}
 	}
 
