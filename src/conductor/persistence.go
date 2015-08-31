@@ -24,7 +24,7 @@ func SetSpoolDirectory(spooldir string) {
 		spoolDirectory = spooldir
 	} else {
 		if spooldir != spoolDirectory {
-			o.Warn("Spool Directory Not Changed.")
+			o.Warn("Refusing to change spool directory as it's already set")
 		}
 	}
 }
@@ -60,7 +60,7 @@ func loadLastId() {
 		l, err := cbio.ReadString('\n')
 		lastId, err = strconv.ParseUint(strings.TrimSpace(l), 10, 64)
 		if err != nil {
-			o.Fail("Couldn't read Last ID from checkpoint file.  Aborting for safety.")
+			o.Fail("Couldn't read last ID from checkpoint file")
 		}
 		lastId += IdCheckpointSafetySkip
 	} else {
@@ -80,7 +80,7 @@ func loadLastId() {
 		l, err := cbio.ReadString('\n')
 		lastId, err = strconv.ParseUint(strings.TrimSpace(l), 10, 64)
 		if err != nil {
-			o.Fail("Couldn't read Last ID from last_id.  Aborting for safety.")
+			o.Fail("Couldn't read last ID from last_id")
 		}
 	}
 	writeIdCheckpoint()
@@ -155,7 +155,7 @@ func shuffleToCorrupted(abspath, reason string) {
 	os.Remove(targetname)
 	err := os.Rename(abspath, targetname)
 	o.MightFail(err, "Couldn't bin corrupt spoolfile %s", abspath)
-	o.Warn("Moved \"%s\" to corrupted spool: %s", abspath, reason)
+	o.Warn("Moved %s to corrupted spool: %s", abspath, reason)
 }
 
 func loadSpoolFiles(dirname string, depth int) {

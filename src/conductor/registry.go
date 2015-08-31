@@ -71,7 +71,7 @@ func init() {
 }
 
 func regInternalAdd(hostname string) {
-	o.Warn("Registry: New Host \"%s\"", hostname)
+	o.Info("Adding host: %s", hostname)
 	clientList[hostname] = NewClientInfo()
 	// do this initialisation here since it'll help unmask sequencing errors
 	clientList[hostname].pendingTasks = make(map[uint64]*TaskRequest)
@@ -79,7 +79,7 @@ func regInternalAdd(hostname string) {
 }
 
 func regInternalDel(hostname string) {
-	o.Warn("Registry: Deleting Host \"%s\"", hostname)
+	o.Info("Removing host: %s", hostname)
 	/* remove it from the registry */
 	delete(clientList, hostname)
 }
@@ -160,7 +160,7 @@ func manageRegistry() {
 				req.responseChannel <- resp
 			}
 		case <-expiryChan:
-			o.Debug("job%d: Expiring Job Record", expiryJobid)
+			o.Debug("job%d: expiring job record", expiryJobid)
 			regInternalExpireJob(expiryJobid)
 			expiryChan = nil
 			regInternalFindNextExpiry()
@@ -337,7 +337,7 @@ func regintGetJob(req *registryRequest, resp *registryResponse) {
 		resp.jobs = make([]*JobRequest, 1)
 		resp.jobs[0] = job
 	} else {
-		o.Warn("Received Request for job%d which is not in memory", req.id)
+		o.Warn("Received request for job%d which is not in memory", req.id)
 		go regintGetJobDeferred(req.id, req.responseChannel)
 		// mask out the responseChannel so the deferred handler can use it.
 		req.responseChannel = nil
@@ -579,7 +579,7 @@ func (job *JobRequest) updateState() {
 		}
 	}
 	if !was_finished && job.State.Finished() {
-		o.Debug("job%d: Finished - Setting Expiry Time", job.Id)
+		o.Debug("job%d: finished; setting expiry time", job.Id)
 		regInternalMarkJobForExpiry(job)
 	}
 }

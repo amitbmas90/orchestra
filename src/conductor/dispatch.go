@@ -5,7 +5,6 @@ package main
 
 import (
 	"container/list"
-	o "orchestra"
 )
 
 func NewRequest() (req *JobRequest) {
@@ -72,7 +71,6 @@ func masterDispatch() {
 	for {
 		select {
 		case player := <-playerIdle:
-			o.Debug("Dispatch: Player")
 			/* first, scan to see if we have anything for this player */
 			i := tq.Front()
 			for {
@@ -93,7 +91,6 @@ func masterDispatch() {
 				i = i.Next()
 			}
 		case player := <-playerDead:
-			o.Debug("Dispatch: Dead Player")
 			for i := pq.Front(); i != nil; i = i.Next() {
 				p, _ := i.Value.(*ClientInfo)
 				if player.Player == p.Player {
@@ -102,7 +99,6 @@ func masterDispatch() {
 				}
 			}
 		case task := <-rqTask:
-			o.Debug("Dispatch: Task")
 			/* first, scan to see if we have valid pending player for this task */
 			i := pq.Front()
 			for {
@@ -122,7 +118,6 @@ func masterDispatch() {
 				i = i.Next()
 			}
 		case respChan := <-statusRequest:
-			o.Debug("Status!")
 			response := new(QueueInformation)
 			response.waitingTasks = tq.Len()
 			pqLen := pq.Len()

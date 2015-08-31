@@ -31,7 +31,7 @@ func batchLogger(jobid uint64, errpipe *os.File) {
 			o.Warn("executionLogger failed: %s", err)
 			return
 		}
-		o.Info("JOB %d:STDERR:%s", jobid, string(lb))
+		o.Info("job%d: STDERR: %s", jobid, string(lb))
 	}
 }
 
@@ -58,18 +58,18 @@ func doExecution(task *TaskRequest, completionChannel chan<- *TaskResponse) {
 	// first of all, verify that the score exists at all.
 	score, exists := Scores[task.Score]
 	if !exists {
-		o.Warn("job%d: Request for unknown score \"%s\"", task.Id, task.Score)
+		o.Warn("job%d: request for unknown score: %s", task.Id, task.Score)
 		task.MyResponse.State = RESP_FAILED_UNKNOWN_SCORE
 		return
 	}
 	si := NewScoreInterface(task)
 	if si == nil {
-		o.Warn("job%d: Couldn't initialise Score Interface", task.Id)
+		o.Warn("job%d: couldn't initialise score interface", task.Id)
 		task.MyResponse.State = RESP_FAILED_HOST_ERROR
 		return
 	}
 	if !si.Prepare() {
-		o.Warn("job%d: Couldn't Prepare Score Interface", task.Id)
+		o.Warn("job%d: couldn't prepare score interface", task.Id)
 		task.MyResponse.State = RESP_FAILED_HOST_ERROR
 		return
 	}
@@ -85,7 +85,7 @@ func doExecution(task *TaskRequest, completionChannel chan<- *TaskResponse) {
 	pwd, err := os.Getwd()
 	if err != nil {
 		task.MyResponse.State = RESP_FAILED_HOST_ERROR
-		o.Warn("job%d: Couldn't resolve PWD: %s", task.Id, err)
+		o.Warn("job%d: couldn't resolve PWD: %s", task.Id, err)
 		return
 	}
 	procenv.Env = peSetEnv(procenv.Env, "PWD", pwd)
@@ -123,17 +123,17 @@ func doExecution(task *TaskRequest, completionChannel chan<- *TaskResponse) {
 	var args []string
 	args = append(args, eenv.Arguments...)
 
-	o.Info("job%d: Executing %s", task.Id, score.Executable)
+	o.Info("job%d: executing %s...", task.Id, score.Executable)
 	go batchLogger(task.Id, lr)
 	proc, err := os.StartProcess(score.Executable, args, procenv)
 	if err != nil {
-		o.Warn("job%d: Failed to start processs", task.Id)
+		o.Warn("job%d: failed to start process", task.Id)
 		task.MyResponse.State = RESP_FAILED_HOST_ERROR
 		return
 	}
 	wm, err := proc.Wait()
 	if err != nil {
-		o.Warn("job%d: Error waiting for process", task.Id)
+		o.Warn("job%d: error waiting for process", task.Id)
 		task.MyResponse.State = RESP_FAILED_UNKNOWN
 		// Worse of all, we don't even know if we succeeded.
 		return
@@ -144,16 +144,16 @@ func doExecution(task *TaskRequest, completionChannel chan<- *TaskResponse) {
 		return
 	}
 	if ws.Signaled() {
-		o.Warn("job%d: Process got signalled", task.Id)
+		o.Warn("job%d: process got signalled", task.Id)
 		task.MyResponse.State = RESP_FAILED_UNKNOWN
 		return
 	}
 	if ws.Exited() {
 		if 0 == ws.ExitStatus() {
-			o.Warn("job%d: Process exited OK", task.Id)
+			o.Warn("job%d: process exited OK", task.Id)
 			task.MyResponse.State = RESP_FINISHED
 		} else {
-			o.Warn("job%d: Process exited with failure", task.Id)
+			o.Warn("job%d: process exited with failure", task.Id)
 			task.MyResponse.State = RESP_FAILED
 		}
 		return

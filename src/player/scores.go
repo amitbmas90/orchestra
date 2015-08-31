@@ -76,6 +76,7 @@ var (
 )
 
 func ScoreConfigure(si *ScoreInfo, r io.Reader) {
+	o.Info("Score: %s (%s)", (*si).Name, (*si).Executable)
 	config := NewScoreInfoConfig()
 	err := config.Read(r, 1)
 	o.MightFail(err, "Error Parsing Score Configuration for %s", si.Name)
@@ -114,7 +115,6 @@ func LoadScores() {
 		if (files[i].Mode().Perm() & 0111) != 0 {
 			fullpath := path.Join(scoreDirectory, files[i].Name())
 			conffile := fullpath + ".conf"
-			o.Warn("Considering %s as score", files[i].Name())
 
 			si := NewScoreInfo()
 			si.Name = files[i].Name()
@@ -122,7 +122,6 @@ func LoadScores() {
 
 			conf, err := os.Open(conffile)
 			if err == nil {
-				o.Warn("Parsing configuration for %s", fullpath)
 				ScoreConfigure(si, conf)
 				conf.Close()
 			} else {

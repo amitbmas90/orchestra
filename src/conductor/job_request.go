@@ -107,7 +107,7 @@ func (req *JobRequest) doSerialisation(buf []byte) {
 	outpath := req.FilenameForSpool()
 	fh, err := os.OpenFile(outpath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
 	if err != nil {
-		o.Warn("Could not create persistence file %s: %s", outpath, err)
+		o.Warn("Couldn't create persistence file %s: %s", outpath, err)
 		return
 	}
 	defer fh.Close()

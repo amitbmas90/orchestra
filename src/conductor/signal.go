@@ -6,7 +6,6 @@
 package main
 
 import (
-	"fmt"
 	o "orchestra"
 	"os"
 	"os/signal"
@@ -31,7 +30,7 @@ func signalHandler() {
 
 		switch ux {
 		case syscall.SIGHUP:
-			o.Info("Reloading configuration")
+			o.Info("Reloading configuration...")
 			ConfigLoad()
 		case syscall.SIGINT, syscall.SIGTERM:
 			//FIXME: Gentle Shutdown

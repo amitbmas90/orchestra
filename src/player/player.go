@@ -86,7 +86,6 @@ func acknowledgeResponse(jobid uint64) {
 
 func sendResponse(c net.Conn, resp *TaskResponse) {
 	//FIXME: update retry time on Response
-	o.Debug("Sending Response!")
 	ptr := resp.Encode()
 	p, err := o.Encode(ptr)
 	o.MightFail(err, "Failed to encode response")
@@ -121,26 +120,25 @@ func Reader(conn net.Conn) {
 }
 
 func handleNop(c net.Conn, message interface{}) {
-	o.Debug("NOP Received")
+	o.Debug("NOP received")
 }
 
 func handleIllegal(c net.Conn, message interface{}) {
-	o.Fail("Got Illegal Message")
+	o.Fail("Received illegal message")
 }
 
 func handleRequest(c net.Conn, message interface{}) {
-	o.Debug("Request Recieved.  Decoding!")
 	ptr, ok := message.(*o.ProtoTaskRequest)
 	if !ok {
 		o.Assert("CC stuffed up - handleRequest got something that wasn't a ProtoTaskRequest.")
 	}
 	task := TaskFromProto(ptr)
 	/* search the registry for the task */
-	o.Debug("Request for Job.ID %d", task.Id)
+	o.Debug("job%d: got request", task.Id)
 	existing := TaskGet(task.Id)
 	if nil != existing {
 		if existing.MyResponse.IsFinished() {
-			o.Debug("job%d: Resending Response", task.Id)
+			o.Debug("job%d: resending response...", task.Id)
 			sendResponse(c, existing.MyResponse)
 		}
 	} else {
@@ -150,14 +148,12 @@ func handleRequest(c net.Conn, message interface{}) {
 		task.MyResponse.id = task.Id
 		task.MyResponse.State = RESP_PENDING
 		TaskAdd(task)
-		o.Info("Added New Task (Job ID %d) to our local registry", task.Id)
 		// and then push it onto the pending job list so we know it needs actioning.
 		appendPendingTask(task)
 	}
 }
 
 func handleAck(c net.Conn, message interface{}) {
-	o.Debug("Ack Received")
 	ack, ok := message.(*o.ProtoAcknowledgement)
 	if !ok {
 		o.Assert("CC stuffed up - handleAck got something that wasn't a ProtoAcknowledgement.")
@@ -183,7 +179,7 @@ func connectMe(initialDelay time.Duration) {
 	for {
 		// Sleep first.
 		if backOff > 0 {
-			o.Info("Sleeping for %d seconds", int(backOff.Seconds()))
+			o.Info("Sleeping for %d seconds...", int(backOff.Seconds()))
 			time.Sleep(backOff)
 			backOff *= ReconnectDelayScale
 			if backOff > MaximumReconnectDelay {
@@ -208,7 +204,7 @@ func connectMe(initialDelay time.Duration) {
 		masterHostname := GetStringOpt("master")
 
 		raddr := fmt.Sprintf("%s:%d", masterHostname, 2258)
-		o.Info("Connecting to %s", raddr)
+		o.Info("Connecting to %s...", raddr)
 		conn, err := tls.Dial("tcp", raddr, tconf)
 		if err == nil && !*DontVerifyPeer {
 			conn.Handshake()
@@ -262,10 +258,9 @@ func ProcessingLoop() {
 				taskCompletionChan = ExecuteTask(nextTask)
 			} else {
 				if conn != nil && !pendingTaskRequest {
-					o.Debug("Asking for trouble")
+					o.Debug("Requesting tasks...")
 					p := o.MakeReadyForTask()
 					p.Send(conn)
-					o.Debug("Sent Request for trouble")
 					pendingTaskRequest = true
 				}
 			}
@@ -273,7 +268,7 @@ func ProcessingLoop() {
 		select {
 		// Currently executing job finishes.
 		case newresp := <-taskCompletionChan:
-			o.Debug("job%d: Completed with State %s\n", newresp.id, newresp.State)
+			o.Debug("job%d: completed with state %s\n", newresp.id, newresp.State)
 			// preemptively set a retrytime.
 			newresp.RetryTime = time.Now()
 			// ENOCONN - sub it in as our next retryresponse, and prepend the old one onto the queue.
@@ -281,14 +276,13 @@ func ProcessingLoop() {
 				if nil != nextRetryResp {
 					prequeueResponse(nextRetryResp)
 				}
-				o.Debug("job%d: Queuing Initial Response", newresp.id)
 				nextRetryResp = newresp
 			} else {
-				o.Debug("job%d: Sending Initial Response", newresp.id)
+				o.Debug("job%d: sending response...", newresp.id)
 				sendResponse(conn, newresp)
 			}
 			if doScoreReload {
-				o.Info("Performing Deferred score reload")
+				o.Info("Reloading scores...")
 				LoadScores()
 				doScoreReload = false
 			}
@@ -314,7 +308,7 @@ func ProcessingLoop() {
 			p.Send(conn)
 		// Lost connection.  Shut downt he connection.
 		case <-lostConnection:
-			o.Warn("Lost Connection to Master")
+			o.Warn("Lost connection to master")
 			conn.Close()
 			conn = nil
 			// restart the connection attempts
@@ -337,7 +331,7 @@ func ProcessingLoop() {
 				connectDelay = 0
 				handler(conn, upkt)
 			} else {
-				o.Fail("Unhandled Pkt Type %d", p.Type)
+				o.Fail("Unhandled packet type %d", p.Type)
 			}
 		// Reload scores
 		case <-reloadScores:
@@ -345,7 +339,7 @@ func ProcessingLoop() {
 			// long as nobody's currently executing.
 			// who'd have thunk it?
 			if taskCompletionChan == nil {
-				o.Info("Reloading scores")
+				o.Info("Reloading scores...")
 				LoadScores()
 			} else {
 				o.Info("Deferring score reload (execution in progress)")
@@ -356,7 +350,7 @@ func ProcessingLoop() {
 			if conn == nil {
 				break
 			}
-			o.Debug("Sending NOP")
+			o.Debug("Sending NOP...")
 			p := o.MakeNop()
 			p.Send(conn)
 		}

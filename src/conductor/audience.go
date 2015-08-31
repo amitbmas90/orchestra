@@ -58,18 +58,18 @@ func handleAudienceRequest(c net.Conn) {
 	outobj := new(GenericJsonRequest)
 	err := dec.Decode(outobj)
 	if err != nil {
-		o.Warn("Error decoding JSON talking to audience: %s", err)
+		o.Warn("Error decoding JSON request from audience: %s", err)
 		return
 	}
 
 	if nil == outobj.Op {
-		o.Warn("Malformed JSON message talking to audience.  Missing Op")
+		o.Warn("Malformed JSON request from audience: missing op")
 		return
 	}
 	switch *(outobj.Op) {
 	case "status":
 		if nil == outobj.Id {
-			o.Warn("Malformed Status message talking to audience. Missing Job ID")
+			o.Warn("Malformed status request from audience: missing job ID")
 			return
 		}
 		job := JobGet(*outobj.Id)
@@ -96,26 +96,25 @@ func handleAudienceRequest(c net.Conn) {
 			jresp[1] = nil
 		}
 		enc.Encode(jresp)
-		o.Debug("Status...")
 	case "queue":
 		if nil == outobj.Score {
-			o.Warn("Malformed Queue message talking to audience. Missing Score")
+			o.Warn("Malformed queue request from audience: missing score")
 			sendQueueFailureResponse("Missing Score", enc)
 			return
 		}
 		if nil == outobj.Scope {
-			o.Warn("Malformed Queue message talking to audience. Missing Scope")
+			o.Warn("Malformed queue request from audience: missing scope")
 			sendQueueFailureResponse("Missing Scope", enc)
 			return
 		}
 		if nil == outobj.Players || len(outobj.Players) < 1 {
-			o.Warn("Malformed Queue message talking to audience. Missing Players")
+			o.Warn("Malformed queue request from audience: missing players")
 			sendQueueFailureResponse("Missing Players", enc)
 			return
 		}
 		for _, player := range outobj.Players {
 			if !HostAuthorised(player) {
-				o.Warn("Malformed Queue message - unknown player %s specified.", player)
+				o.Warn("Malformed queue request from audience: unknown player %s specified", player)
 				sendQueueFailureResponse("Invalid Player", enc)
 				return
 			}
@@ -129,7 +128,7 @@ func handleAudienceRequest(c net.Conn) {
 		QueueJob(job)
 		sendQueueSuccessResponse(job, enc)
 	default:
-		o.Warn("Unknown operation talking to audience: \"%s\"", *(outobj.Op))
+		o.Warn("Unknown operation in request from audience: %s", *(outobj.Op))
 		return
 	}
 
@@ -171,7 +170,7 @@ func AudienceListener(l net.Listener) {
 	for {
 		c, err := l.Accept()
 		if err != nil {
-			o.Warn("Accept() failed on Audience Listenter.")
+			o.Warn("Accept() failed on Audience listener")
 			break
 		}
 		go handleAudienceRequest(c)
@@ -182,7 +181,6 @@ func UnixAudienceListener(sockaddr string) {
 	fi, err := os.Stat(sockaddr)
 	if err == nil {
 		if (fi.Mode() & os.ModeSocket) != 0 {
-			o.Warn("Removing stale socket at %s", sockaddr)
 			os.Remove(sockaddr)
 		} else {
 			o.Fail("%s exists and is not a socket", sockaddr)
