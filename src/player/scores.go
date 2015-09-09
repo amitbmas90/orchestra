@@ -20,8 +20,6 @@ import (
 type ScoreInfo struct {
 	Name       string
 	Executable string
-	InitialPwd string
-	InitialEnv map[string]string
 
 	Interface string
 
@@ -35,7 +33,6 @@ type ScoreExecution struct {
 
 func NewScoreInfo() (si *ScoreInfo) {
 	si = new(ScoreInfo)
-	si.InitialEnv = make(map[string]string)
 
 	config := NewScoreInfoConfig()
 	si.updateFromConfig(config)
@@ -55,20 +52,10 @@ func NewScoreInfoConfig() (config *configureit.Config) {
 }
 
 func (si *ScoreInfo) updateFromConfig(config *configureit.Config) {
-	// propogate PATH overrides.
-	opt := config.Get("dir")
-	sopt, _ := opt.(*configureit.StringOption)
-	si.InitialEnv["PATH"] = sopt.Value
-
 	// set the interface type.
-	opt = config.Get("interface")
-	sopt, _ = opt.(*configureit.StringOption)
+	opt := config.Get("interface")
+	sopt, _ := opt.(*configureit.StringOption)
 	si.Interface = sopt.Value
-
-	// propogate initial Pwd
-	opt = config.Get("dir")
-	sopt, _ = opt.(*configureit.StringOption)
-	si.InitialPwd = sopt.Value
 }
 
 var (
