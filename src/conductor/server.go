@@ -79,6 +79,9 @@ func ServiceRequests() {
 
 	// ask the client to authenticate
 	sockConfig.ClientAuth = tls.RequireAndVerifyClientCert
+	if *DontVerifyPeer {
+		sockConfig.ClientAuth = tls.RequestClientCert
+	}
 
 	/* convert the bindAddress to a string suitable for the Listen call */
 	var laddr string
