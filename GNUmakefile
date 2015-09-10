@@ -70,13 +70,13 @@ $(if $(GOARCH),$(if $(V),$(info # Set GOARCH = $(GOARCH))))
 GO_FLAGS :=$(if $(GOCCFLAGS), -ccflags '$(GOCCFLAGS)')$(if $(GOGCFLAGS), -gcflags '$(GOGCFLAGS)')$(if $(GOLDFLAGS), -ldflags '$(GOLDFLAGS)')
 
 define build-bin
-bin/$(1): need-GO src/$(1)/*.go $(LIBS:%=pkg/$(GOOS)_$(GOARCH)/%.a)
+bin/$(1): src/$(1)/*.go $(LIBS:%=pkg/$(GOOS)_$(GOARCH)/%.a) | need-GO
 	$$(GO_HERE) build$(GO_FLAGS) -o $$@ $(1)
 
 endef
 
 define build-pkg
-pkg/$(GOOS)_$(GOARCH)/$(1).a: need-GO src/$(1)/*.go
+pkg/$(GOOS)_$(GOARCH)/$(1).a: src/$(1)/*.go | need-GO
 	$$(GO_HERE) build$(GO_FLAGS) -o $$@ $(1)
 
 endef
@@ -85,10 +85,10 @@ $(eval $(foreach _,$(PACKAGES),$(call build-bin,$(_))))
 $(eval $(foreach _,$(LIBS),$(call build-pkg,$(_))))
 
 pkg/$(GOOS)_$(GOARCH)/orchestra.a: src/orchestra/orchestra.pb.go
-%.pb.go: %.proto need-PROTOC need-PROTOC_GEN_GO
+%.pb.go: %.proto | need-PROTOC need-PROTOC_GEN_GO
 	$(PROTOC) --go_out=. $<
 
-$(GO_TOOLS): need-GO
+$(GO_TOOLS): | need-GO
 	$(GO_HERE) $@ $(PACKAGES) $(LIBS)
 
 ifdef V
