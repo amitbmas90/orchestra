@@ -10,7 +10,6 @@ import (
 	o "orchestra"
 	"os"
 	"path"
-	"strings"
 	"syscall"
 )
 
@@ -177,7 +176,7 @@ func AudienceListener(l net.Listener) {
 	}
 }
 
-func UnixAudienceListener(sockaddr string) {
+func UnixAudienceListener(sockaddr string, sockmode os.FileMode, sockuid int, sockgid int) {
 	fi, err := os.Stat(sockaddr)
 	if err == nil {
 		if (fi.Mode() & os.ModeSocket) != 0 {
@@ -190,10 +189,16 @@ func UnixAudienceListener(sockaddr string) {
 	o.MightFail(err, "Couldn't create socket directory")
 	laddr, err := net.ResolveUnixAddr("unix", sockaddr)
 	o.MightFail(err, "Couldn't resolve audience socket address")
-	old_umask := syscall.Umask(0077)
+	old_umask := syscall.Umask(0777)
 	defer syscall.Umask(old_umask)
 	l, err := net.ListenUnix("unix", laddr)
 	o.MightFail(err, "Couldn't start audience unixsock listener")
+	if sockuid >= 0 || sockgid >= 0 {
+		err = os.Chown(sockaddr, sockuid, sockgid)
+		o.MightFail(err, "Couldn't chown audience unixsock listener")
+	}
+	err = os.Chmod(sockaddr, sockmode)
+	o.MightFail(err, "Couldn't chmod audience unixsock listener")
 
 	// make sure we clean up the unix socket when we die.
 	defer l.Close()
@@ -202,6 +207,10 @@ func UnixAudienceListener(sockaddr string) {
 }
 
 func StartAudienceSock() {
-	audienceSockPath := strings.TrimSpace(GetStringOpt("audience socket path"))
-	go UnixAudienceListener(audienceSockPath)
+	audienceSockPath := GetStringOpt("audience socket path")
+	audienceSockMode := GetModeOpt("audience socket mode")
+	audienceSockUID := GetIntOpt("audience socket uid")
+	audienceSockGID := GetIntOpt("audience socket gid")
+
+	go UnixAudienceListener(audienceSockPath, audienceSockMode, audienceSockUID, audienceSockGID)
 }

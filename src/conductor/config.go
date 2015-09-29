@@ -5,6 +5,7 @@ import (
 	"github.com/kuroneko/configureit"
 	o "orchestra"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -17,6 +18,9 @@ func init() {
 	configFile.Add("bind address", configureit.NewStringOption(""))
 	configFile.Add("server name", configureit.NewStringOption(""))
 	configFile.Add("audience socket path", configureit.NewStringOption("/var/run/orchestra/conductor.sock"))
+	configFile.Add("audience socket mode", configureit.NewStringOption("0700"))
+	configFile.Add("audience socket uid", configureit.NewIntOption(-1))
+	configFile.Add("audience socket gid", configureit.NewIntOption(-1))
 	configFile.Add("conductor state path", configureit.NewStringOption("/var/spool/orchestra"))
 	configFile.Add("player file path", configureit.NewStringOption("/etc/orchestra/players"))
 }
@@ -31,6 +35,25 @@ func GetStringOpt(key string) string {
 		o.Assert("tried to get a non-string configuration option with GetStringOpt")
 	}
 	return strings.TrimSpace(sopt.Value)
+}
+
+func GetIntOpt(key string) int {
+	cnode := configFile.Get(key)
+	if cnode == nil {
+		o.Assert("tried to get a configuration option that doesn't exist.")
+	}
+	sopt, ok := cnode.(*configureit.IntOption)
+	if !ok {
+		o.Assert("tried to get a non-int configuration option with GetIntOpt")
+	}
+	return sopt.Value
+}
+
+func GetModeOpt(key string) os.FileMode {
+	s := GetStringOpt(key)
+	mode, err := strconv.ParseUint(s, 8, 0)
+	o.MightFail(err, "Invalid mode in %s option: %s", key, s)
+	return os.FileMode(mode)
 }
 
 func GetCACertList() []string {
